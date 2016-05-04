@@ -14,17 +14,24 @@ namespace SharpSim.Model.SSA
     {
         private List<SSAOperand> arguments = new List<SSAOperand>();
 
-        public CallStatement(string function)
+        public CallStatement(ActionOperand action)
         {
-            this.Function = function;
+            this.Action = action;
         }
 
-        public string Function{ get; private set; }
+        public ActionOperand Action{ get; private set; }
 
         public override Fixedness Fixed
         {
             get {
                 return this.arguments.All(a => a.Fixed == Fixedness.AlwaysFixed) ? Fixedness.AlwaysFixed : Fixedness.Dynamic;
+            }
+        }
+
+        public override SSAType Type
+        {
+            get {
+                return this.Action.Value.Prototype.ReturnType;
             }
         }
 
@@ -37,7 +44,7 @@ namespace SharpSim.Model.SSA
         {
             var builder = new System.Text.StringBuilder();
 
-            builder.AppendFormat("call @{0}", this.Function);
+            builder.AppendFormat("call {0}", this.Action);
 
             if (this.arguments.Count > 0) {
                 builder.Append(", ");

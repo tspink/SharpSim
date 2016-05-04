@@ -10,8 +10,15 @@ namespace SharpSim.Model.SSA
 {
     public class LoadRegisterStatement : RegisterAccessStatement
     {
-        public LoadRegisterStatement(SSAOperand fileOffset) : base(fileOffset)
+        public LoadRegisterStatement(SSAOperand fileOffset, SSAType registerType) : base(fileOffset, registerType)
         {
+        }
+
+        public override SSAType Type
+        {
+            get {
+                return this.RegisterType;
+            }
         }
 
         public override string ToString()

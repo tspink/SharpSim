@@ -10,7 +10,7 @@ namespace SharpSim.Model.SSA
 {
     public class ComparisonStatement : BinaryStatement
     {
-        public enum ComparisonType
+        public enum ComparisonKind
         {
             Equal,
             NotEqual,
@@ -20,20 +20,27 @@ namespace SharpSim.Model.SSA
             GreaterThanOrEqual
         }
 
-        public ComparisonStatement(SSAOperand lhs, SSAOperand rhs, ComparisonType type) : base(lhs, rhs)
+        public ComparisonStatement(TypedSSAOperand lhs, TypedSSAOperand rhs, ComparisonKind kind) : base(lhs, rhs)
         {
-            this.Type = type;
+            this.Kind = kind;
         }
 
-        public ComparisonType Type{ get; private set; }
+        public ComparisonKind Kind { get; private set; }
+
+        public override SSAType Type
+        {
+            get {
+                return PrimitiveType.Boolean;
+            }
+        }
 
         public override string ToString()
         {
             var builder = new System.Text.StringBuilder();
             builder.Append("cmp");
 
-            switch (this.Type) {
-            case ComparisonType.Equal:
+            switch (this.Kind) {
+            case ComparisonKind.Equal:
                 builder.Append("eq");
                 break;
             default:

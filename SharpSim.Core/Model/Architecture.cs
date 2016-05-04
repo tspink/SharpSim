@@ -12,6 +12,7 @@ namespace SharpSim.Model
     public class Architecture
     {
         private List<Behaviour> behaviours = new List<Behaviour>();
+        private List<Helper> helpers = new List<Helper>();
 
         public Architecture(string name)
         {
@@ -28,7 +29,14 @@ namespace SharpSim.Model
             this.behaviours.Add(behaviour);
         }
 
+        public void AddHelper(Helper helper)
+        {
+            this.helpers.Add(helper);
+        }
+
         public IEnumerable<Behaviour> Behaviours{ get { return behaviours.AsReadOnly(); } }
+
+        public IEnumerable<Helper> Helpers{ get { return helpers.AsReadOnly(); } }
     }
 }
 

@@ -112,3 +112,8 @@ helper uint32 rori(uint32 bits, uint8 shift, uint8 carry_in, uint8 &carry_out)
         carry_out = ((res & 0x80000000) != 0);
         return res;
 };
+
+helper uint32 bitsel(uint32 val, uint8 bit)
+{
+        return (val >> bit) & 1;
+};

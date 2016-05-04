@@ -22,18 +22,25 @@ namespace SharpSim.Model.SSA
             ArithmeticShiftRight
         }
 
-        public ArithmeticStatement(SSAOperand lhs, SSAOperand rhs, ArithmeticOperation type) : base(lhs, rhs)
+        public ArithmeticStatement(TypedSSAOperand lhs, TypedSSAOperand rhs, ArithmeticOperation kind) : base(lhs, rhs)
         {
-            this.Type = type;
+            this.Kind = kind;
         }
 
-        public ArithmeticOperation Type{ get; private set; }
+        public ArithmeticOperation Kind{ get; private set; }
+
+        public override SSAType Type
+        {
+            get {
+                return this.LHS.Type;
+            }
+        }
 
         public override string ToString()
         {
             var builder = new System.Text.StringBuilder();
 
-            switch (this.Type) {
+            switch (this.Kind) {
             case ArithmeticOperation.Add:
                 builder.Append("add");
                 break;

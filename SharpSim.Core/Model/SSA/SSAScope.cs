@@ -12,22 +12,39 @@ namespace SharpSim.Model.SSA
 {
     public class SSAScope
     {
-        private List<SSAStatement> statements = new List<SSAStatement>();
+        private Dictionary<string, SSASymbol> localSymbols = new Dictionary<string, SSASymbol>();
 
-        public SSAScope()
+        internal SSAScope()
         {
+            this.Parent = null;
         }
 
-        public void AddStatement(SSAStatement stmt)
+        public SSAScope(SSAScope parent)
         {
-            if (stmt == null)
-                throw new ArgumentNullException("stmt");
-
-            this.statements.Add(stmt);
+            if (parent == null)
+                throw new ArgumentNullException("parent");
+            this.Parent = parent;
         }
 
-        public SSAStatement First{ get { return this.statements.FirstOrDefault(); } }
+        public SSAScope Parent{ get; private set; }
 
-        public SSAStatement Last{ get { return this.statements.LastOrDefault(); } }
+        public SSASymbol CreateSymbol(string name, SSAType type)
+        {
+            var symbol = new SSASymbol(name, type);
+            localSymbols.Add(name, symbol);
+            return symbol;
+        }
+
+        public SSASymbol ResolveSymbol(string name)
+        {
+            SSASymbol ret;
+            if (localSymbols.TryGetValue(name, out ret))
+                return ret;
+
+            if (this.Parent == null)
+                throw new Exception(string.Format("Symbol '{0}' not found in scope", name));
+            
+            return this.Parent.ResolveSymbol(name);
+        }
     }
 }

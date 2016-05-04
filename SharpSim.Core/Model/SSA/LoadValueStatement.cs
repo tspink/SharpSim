@@ -24,6 +24,13 @@ namespace SharpSim.Model.SSA
             }
         }
 
+        public override SSAType Type
+        {
+            get {
+                return this.Symbol.Value.Type;
+            }
+        }
+
         public override string ToString()
         {
             return string.Format("ldv {0}", this.Symbol);

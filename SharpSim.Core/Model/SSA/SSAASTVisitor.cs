@@ -14,17 +14,17 @@ namespace SharpSim.Model.SSA
 
     public class SSAASTVisitor : ASTVisitor
     {
-        private SSAContext context;
+        private SSAAction action;
         private SSABlock currentBlock;
         private Stack<SSAScope> scope = new Stack<SSAScope>();
         private List<Tuple<ControlFlowStatement, int>> unresolvedControlFlow = new List<Tuple<ControlFlowStatement, int>>();
 
-        public SSAASTVisitor(SSAContext context)
+        public SSAASTVisitor(SSAAction action)
         {
-            if (context == null)
-                throw new ArgumentNullException("context");
+            if (action == null)
+                throw new ArgumentNullException("action");
 
-            this.context = context;
+            this.action = action;
         }
 
         public override void VisitBehaviour(Behaviour behaviour)
@@ -32,10 +32,13 @@ namespace SharpSim.Model.SSA
             if (currentBlock != null)
                 throw new InvalidOperationException();
 
-            currentBlock = this.context.EntryBlock;
+            currentBlock = this.action.EntryBlock;
 
             var rootScope = new SSAScope();
             scope.Push(rootScope);
+
+            // TODO: Create instruction symbols
+
 
             base.VisitBehaviour(behaviour);
 
@@ -43,12 +46,35 @@ namespace SharpSim.Model.SSA
                 throw new Exception("Unbalanced scope");
 
             if (!(this.currentBlock.Last is ControlFlowStatement))
-                this.currentBlock.AddStatement(new LeaveStatement());
+                CurrentBlock.AddStatement(new LeaveStatement());
+        }
+
+        public override void VisitHelper(Helper helper)
+        {
+            if (currentBlock != null)
+                throw new InvalidOperationException();
+
+            currentBlock = this.action.EntryBlock;
+
+            var rootScope = new SSAScope();
+            scope.Push(rootScope);
+
+            foreach (var parameter in helper.Parameters) {
+                rootScope.CreateSymbol(parameter.Name, SSAType.FromString(parameter.Type));
+            }
+
+            base.VisitHelper(helper);
+
+            if (scope.Pop() != rootScope)
+                throw new Exception("Unbalanced scope");
+
+            if (!(this.currentBlock.Last is ControlFlowStatement))
+                CurrentBlock.AddStatement(new LeaveStatement());
         }
 
         public override void VisitFunctionBody(FunctionBody body)
         {
-            var newScope = new SSAScope();
+            var newScope = new SSAScope(scope.Peek());
             scope.Push(newScope);
             base.VisitFunctionBody(body);
             if (scope.Pop() != newScope)
@@ -60,10 +86,14 @@ namespace SharpSim.Model.SSA
             if (!(readRegisterBank.Bank is SymbolExpression))
                 throw new NotSupportedException();
 
-            var id = ExpressionToOperand(readRegisterBank.Id);
+            var offset = BankedRegisterOperand(readRegisterBank.Bank, readRegisterBank.Id);
+            CurrentBlock.AddStatement(new LoadRegisterStatement(offset, PrimitiveType.UInt32));
+        }
 
-            var ssa = new LoadRegisterStatement(id);
-            currentBlock.AddStatement(ssa);
+        public override void VisitReadRegister(ReadRegister readRegister)
+        {
+            var offset = RegisterOperand(readRegister.Id);
+            CurrentBlock.AddStatement(new LoadRegisterStatement(offset, PrimitiveType.UInt32));
         }
 
         public override void VisitWriteRegisterBank(WriteRegisterBank writeRegisterBank)
@@ -71,16 +101,26 @@ namespace SharpSim.Model.SSA
             if (!(writeRegisterBank.Bank is SymbolExpression))
                 throw new NotSupportedException();
 
-            var id = ExpressionToOperand(writeRegisterBank.Id);
+            var offset = BankedRegisterOperand(writeRegisterBank.Bank, writeRegisterBank.Id);
             var value = ExpressionToOperand(writeRegisterBank.Value);
 
-            var ssa = new StoreRegisterStatement(value, id);
+            var ssa = new StoreRegisterStatement(value, offset, PrimitiveType.UInt32);
             currentBlock.AddStatement(ssa);
+        }
+
+        private SSAOperand BankedRegisterOperand(Expression bank, Expression id)
+        {
+            return new IntegerOperand(PrimitiveType.UInt32, 0);
+        }
+
+        private SSAOperand RegisterOperand(Expression id)
+        {
+            return new IntegerOperand(PrimitiveType.UInt32, 0);
         }
 
         public override void VisitFunctionCall(FunctionCall call)
         {
-            var ssa = new CallStatement(call.Name);
+            var ssa = new CallStatement(CurrentBlock.Owner.Owner.GetAction(call.Name).AsOperand());
 
             foreach (var arg in call.Arguments) {
                 arg.Accept(this);
@@ -92,7 +132,7 @@ namespace SharpSim.Model.SSA
 
         public override void VisitStructAccess(StructAccess structAccess)
         {
-            var ssa = new LoadFieldStatement(structAccess.Member.AsOperand());
+            var ssa = new LoadFieldStatement(CurrentScope.ResolveSymbol("inst." + structAccess.Member).AsOperand());
             currentBlock.AddStatement(ssa);
         }
 
@@ -111,7 +151,7 @@ namespace SharpSim.Model.SSA
 
         public override void VisitSymbolExpression(SymbolExpression symbol)
         {
-            this.currentBlock.AddStatement(new LoadValueStatement(symbol.Symbol.AsOperand()));
+            this.currentBlock.AddStatement(new LoadValueStatement(CurrentScope.ResolveSymbol(symbol.Symbol).AsOperand()));
         }
 
         public override void VisitAssignmentExpression(AssignmentExpression asnExpression)
@@ -121,15 +161,17 @@ namespace SharpSim.Model.SSA
 
             var rhs = ExpressionToOperand(asnExpression.RHS);
 
-            var ssa = new StoreValueStatement(rhs, ((SymbolExpression)asnExpression.LHS).Symbol.AsOperand());
+            var ssa = new StoreValueStatement(rhs, CurrentScope.ResolveSymbol(((SymbolExpression)asnExpression.LHS).Symbol).AsOperand());
             this.currentBlock.AddStatement(ssa);
         }
 
         public override void VisitVariableDeclaration(VariableDeclaration varDecl)
         {
+            var symbol = scope.Peek().CreateSymbol(varDecl.Name, SSAType.FromString(varDecl.Type));
+
             if (varDecl.Assignment != null) {
                 var asn = ExpressionToOperand(varDecl.Assignment);
-                var ssa = new StoreValueStatement(asn, varDecl.Name.AsOperand());
+                var ssa = new StoreValueStatement(asn, symbol.AsOperand());
                 this.currentBlock.AddStatement(ssa);
             }
         }
@@ -139,12 +181,12 @@ namespace SharpSim.Model.SSA
             var ssaCond = ExpressionToOperand(ifStatement.Condition);
             var branchBlock = this.currentBlock;
 
-            var trueBlock = this.context.CreateBlock();
+            var trueBlock = this.action.CreateBlock();
             this.currentBlock = trueBlock;
 
             ifStatement.IfTrue.Accept(this);
 
-            var postBlock = this.context.CreateBlock();
+            var postBlock = this.action.CreateBlock();
 
             if (!(this.currentBlock.Last is ControlFlowStatement)) {
                 this.currentBlock.AddStatement(new JumpStatement(postBlock.AsOperand()));
@@ -167,24 +209,24 @@ namespace SharpSim.Model.SSA
             var lhs = ExpressionToOperand(equalityExpression.LHS);
             var rhs = ExpressionToOperand(equalityExpression.RHS);
 
-            ComparisonStatement.ComparisonType comparisonType;
+            ComparisonStatement.ComparisonKind comparisonKind;
             switch (equalityExpression.Type) {
             case EqualityOperatorType.Equal:
-                comparisonType = ComparisonStatement.ComparisonType.Equal;
+                comparisonKind = ComparisonStatement.ComparisonKind.Equal;
                 break;
             case EqualityOperatorType.NotEqual:
-                comparisonType = ComparisonStatement.ComparisonType.NotEqual;
+                comparisonKind = ComparisonStatement.ComparisonKind.NotEqual;
                 break;
             default:
                 throw new NotSupportedException();
             }
 
-            var ssa = new ComparisonStatement(lhs, rhs, comparisonType);
+            var ssa = new ComparisonStatement(lhs, rhs, comparisonKind);
 
             this.currentBlock.AddStatement(ssa);
         }
 
-        private SSAOperand ExpressionToOperand(Expression expr)
+        private TypedSSAOperand ExpressionToOperand(Expression expr)
         {
             if (expr is IntegerConstantExpression) {
                 return ((IntegerConstantExpression)expr).Value.AsOperand();
@@ -194,6 +236,10 @@ namespace SharpSim.Model.SSA
 
             return this.currentBlock.Last.AsOperand();
         }
+
+        private SSABlock CurrentBlock{ get { return this.currentBlock; } }
+
+        private SSAScope CurrentScope{ get { return this.scope.Peek(); } }
     }
 }
 

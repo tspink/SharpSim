@@ -22,6 +22,8 @@ namespace SharpSim.Model.SSA
 
         public SSABlock Owner{ get; internal set; }
 
+        public abstract SSAType Type{ get; }
+
         public abstract Fixedness Fixed{ get; }
     }
 }

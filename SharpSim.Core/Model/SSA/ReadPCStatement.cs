@@ -10,14 +10,18 @@ namespace SharpSim.Model.SSA
 {
     public class ReadPCStatement : SSAStatement
     {
-        public ReadPCStatement()
-        {
-        }
-
         public override Fixedness Fixed
         {
             get {
                 return Fixedness.Dynamic;
+            }
+        }
+
+        public override SSAType Type
+        {
+            get {
+                // XXX: TODO: HACK HACK HACK
+                return PrimitiveType.UInt32;
             }
         }
 

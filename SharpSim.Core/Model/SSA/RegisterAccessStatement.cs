@@ -10,12 +10,15 @@ namespace SharpSim.Model.SSA
 {
     public abstract class RegisterAccessStatement : SSAStatement
     {
-        public RegisterAccessStatement(SSAOperand fileOffset)
+        public RegisterAccessStatement(SSAOperand fileOffset, SSAType registerType)
         {
             this.FileOffset = fileOffset;
+            this.RegisterType = registerType;
         }
 
         public SSAOperand FileOffset{ get; private set; }
+
+        public SSAType RegisterType{ get; private set; }
 
         public override Fixedness Fixed
         {

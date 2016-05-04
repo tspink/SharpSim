@@ -6,6 +6,7 @@
 //
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace SharpSim.Model
 {
@@ -46,22 +47,58 @@ namespace SharpSim.Model
 
             arch = new Architecture(archName);
 
+            var context = new SSA.SSAContext();
+
+            // Load helper prototypes
+            foreach (var archFile in archFiles) {
+                foreach (var helper in archFile.Helpers) {
+                    context.CreateAction(helper.Name, GeneratePrototype(helper));
+                }
+            }
+
+            foreach (var archFile in archFiles) {
+                foreach (var helper in archFile.Helpers) {
+                    arch.AddHelper(BuildHelper(context, helper));
+                }
+            }
+
             foreach (var archFile in archFiles) {
                 foreach (var behaviour in archFile.Behaviours) {
-                    arch.AddBehaviour(BuildBehaviour(behaviour));
+                    arch.AddBehaviour(BuildBehaviour(context, behaviour));
                 }
             }
 
             return true;
         }
 
-        private Behaviour BuildBehaviour(AST.Behaviour behaviour)
+        private Helper BuildHelper(SSA.SSAContext context, AST.Helper helper)
         {
-            var context = new SSA.SSAContext();
-            var visitor = new SSA.SSAASTVisitor(context);
+            var action = context.GetAction(helper.Name);
+            var visitor = new SSA.SSAASTVisitor(action);
+            visitor.VisitHelper(helper);
+
+            return new Helper(helper.Name, action);
+        }
+
+        private Behaviour BuildBehaviour(SSA.SSAContext context, AST.Behaviour behaviour)
+        {
+            var action = context.CreateAction(behaviour.Name, GeneratePrototype(behaviour));
+            var visitor = new SSA.SSAASTVisitor(action);
             visitor.VisitBehaviour(behaviour);
 
-            return new Behaviour(behaviour.Name, context);
+            return new Behaviour(behaviour.Name, action);
+        }
+
+        private SSA.SSAActionPrototype GeneratePrototype(AST.Helper helper)
+        {
+            return SSA.SSAActionPrototype.FromParameters(
+                SSA.SSAType.FromString(helper.ReturnType),
+                helper.Parameters.Select(p => SSA.SSAType.FromString(p.Type)));
+        }
+
+        private SSA.SSAActionPrototype GeneratePrototype(AST.Behaviour behaviour)
+        {
+            return new SSA.SSAActionPrototype(SSA.PrimitiveType.Void);
         }
     }
 }

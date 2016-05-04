@@ -51,7 +51,7 @@ namespace SharpSim.Generate
 
             foreach (var behaviour in arch.Behaviours) {
                 Console.WriteLine("Behaviour {0}", behaviour.Name);
-                Console.WriteLine(behaviour.SSA);
+                Console.WriteLine(behaviour.Action);
             }
 
             Console.WriteLine("Built Architecture '{0}'", arch.Name);

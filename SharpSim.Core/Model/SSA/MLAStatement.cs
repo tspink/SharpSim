@@ -23,6 +23,13 @@ namespace SharpSim.Model.SSA
 
         public SSAOperand Shift{ get; private set; }
 
+        public override SSAType Type
+        {
+            get {
+                throw new NotImplementedException();
+            }
+        }
+
         public override Fixedness Fixed
         {
             get {

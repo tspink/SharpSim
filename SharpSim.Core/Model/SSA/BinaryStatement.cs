@@ -10,7 +10,7 @@ namespace SharpSim.Model.SSA
 {
     public abstract class BinaryStatement : SSAStatement
     {
-        public BinaryStatement(SSAOperand lhs, SSAOperand rhs)
+        public BinaryStatement(TypedSSAOperand lhs, TypedSSAOperand rhs)
         {
             if (lhs == null)
                 throw new ArgumentNullException("lhs");
@@ -22,9 +22,9 @@ namespace SharpSim.Model.SSA
             this.RHS = rhs;
         }
 
-        public SSAOperand LHS{ get; private set; }
+        public TypedSSAOperand LHS{ get; private set; }
 
-        public SSAOperand RHS{ get; private set; }
+        public TypedSSAOperand RHS{ get; private set; }
 
         public override Fixedness Fixed
         {

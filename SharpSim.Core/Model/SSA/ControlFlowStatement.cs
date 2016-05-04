@@ -11,11 +11,14 @@ namespace SharpSim.Model.SSA
 {
     public abstract class ControlFlowStatement : SSAStatement
     {
-        public ControlFlowStatement()
-        {
-        }
-
         public abstract IEnumerable<SSABlock> TargetBlocks{ get; }
+
+        public override SSAType Type
+        {
+            get {
+                return PrimitiveType.Void;
+            }
+        }
     }
 }
 

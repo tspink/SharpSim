@@ -10,10 +10,6 @@ namespace SharpSim.Model.SSA
 {
     public class LeaveStatement : ControlFlowStatement
     {
-        public LeaveStatement()
-        {
-        }
-
         public override Fixedness Fixed
         {
             get {

@@ -17,6 +17,13 @@ namespace SharpSim.Model.SSA
 
         public SymbolOperand Field{ get; private set; }
 
+        public override SSAType Type
+        {
+            get {
+                throw new NotImplementedException();
+            }
+        }
+
         public override Fixedness Fixed
         {
             get {

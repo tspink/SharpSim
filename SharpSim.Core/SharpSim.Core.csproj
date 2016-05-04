@@ -99,6 +99,13 @@
     <Compile Include="Model\SSA\SSABlock.cs" />
     <Compile Include="Model\SSA\SSAContext.cs" />
     <Compile Include="Model\SSA\SSAASTVisitor.cs" />
+    <Compile Include="Model\SSA\SSAType.cs" />
+    <Compile Include="Model\Helper.cs" />
+    <Compile Include="Model\SSA\SSAAction.cs" />
+    <Compile Include="Model\SSA\SSAActionPrototype.cs" />
+    <Compile Include="Model\ModelAction.cs" />
+    <Compile Include="Model\SSA\SSASymbol.cs" />
+    <Compile Include="Model\InstructionFormat.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

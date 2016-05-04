@@ -10,12 +10,19 @@ namespace SharpSim.Model.SSA
 {
     public class StoreRegisterStatement : RegisterAccessStatement
     {
-        public StoreRegisterStatement(SSAOperand value, SSAOperand fileOffset) : base(fileOffset)
+        public StoreRegisterStatement(SSAOperand value, SSAOperand fileOffset, SSAType registerType) : base(fileOffset, registerType)
         {
             this.Value = value;
         }
 
         public SSAOperand Value{ get; private set; }
+
+        public override SSAType Type
+        {
+            get {
+                return PrimitiveType.Void;
+            }
+        }
 
         public override string ToString()
         {

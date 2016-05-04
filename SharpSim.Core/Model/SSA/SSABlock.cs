@@ -16,22 +16,23 @@ namespace SharpSim.Model.SSA
         private List<SSAStatement> statements = new List<SSAStatement>();
         private bool hasControlFlowStatement = false;
 
-        public SSABlock()
+        public SSABlock(SSAAction owner)
         {
+            if (owner == null)
+                throw new ArgumentNullException("owner");
+
+            this.Owner = owner;
             this.Fixed = SSAStatement.Fixedness.Unknown;
         }
 
         public uint Index{ get; internal set; }
 
-        public SSAContext Owner{ get; internal set; }
+        public SSAAction Owner{ get; private set; }
 
         public SSAStatement.Fixedness Fixed{ get; set; }
 
         public void AddStatement(SSAStatement statement)
         {
-            if (this.Owner == null)
-                throw new InvalidOperationException("Block not owned by context");
-            
             if (statement == null)
                 throw new ArgumentNullException("statement");
 
