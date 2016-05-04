@@ -63,7 +63,6 @@
     <Compile Include="Model\AST\AddOperator.cs" />
     <Compile Include="Model\AST\LogicalOperator.cs" />
     <Compile Include="Model\SSA\SSAStatement.cs" />
-    <Compile Include="Model\SSA\LoadFieldStatement.cs" />
     <Compile Include="Model\SSA\ComparisonStatement.cs" />
     <Compile Include="Model\SSA\BranchStatement.cs" />
     <Compile Include="Model\SSA\ControlFlowStatement.cs" />
@@ -106,6 +105,9 @@
     <Compile Include="Model\ModelAction.cs" />
     <Compile Include="Model\SSA\SSASymbol.cs" />
     <Compile Include="Model\InstructionFormat.cs" />
+    <Compile Include="Model\ISA.cs" />
+    <Compile Include="Model\AST\FormatDefinition.cs" />
+    <Compile Include="Model\AST\FormatFieldDefinition.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

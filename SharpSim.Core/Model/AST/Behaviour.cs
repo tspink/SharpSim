@@ -10,16 +10,19 @@ namespace SharpSim.Model.AST
 {
     public class Behaviour : ASTNode
     {
-        public Behaviour(ASTNode.ASTNodeLocation location, string type, string name, FunctionBody body) : base(location)
+        public Behaviour(ASTNode.ASTNodeLocation location, string isaName, string formatName, string name, FunctionBody body) : base(location)
         {
-            this.Type = type;
+            this.ISAName = isaName;
+            this.FormatName = formatName;
             this.Name = name;
             this.Body = body;
         }
 
-        public string Type{ get; private set; }
-
         public string Name{ get; private set; }
+
+        public string ISAName{ get; private set; }
+
+        public string FormatName{ get; private set; }
 
         public FunctionBody Body{ get; private set; }
 

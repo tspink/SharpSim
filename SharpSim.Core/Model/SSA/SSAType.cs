@@ -17,6 +17,8 @@ namespace SharpSim.Model.SSA
         public static SSAType FromString(string s)
         {
             switch (s) {
+            case "void":
+                return PrimitiveType.Void;
             case "uint8":
                 return PrimitiveType.UInt8;
             case "uint16":
@@ -28,6 +30,11 @@ namespace SharpSim.Model.SSA
             }
 
             throw new Exception(string.Format("Unrecognised type '{0}'", s));
+        }
+
+        public ReferenceType CreateReferenceType()
+        {
+            return new ReferenceType(this);
         }
     }
 
@@ -60,6 +67,49 @@ namespace SharpSim.Model.SSA
         }
 
         public PrimitiveKind Kind{ get; private set; }
+
+        public override string ToString()
+        {
+            switch (this.Kind) {
+            case PrimitiveKind.Boolean:
+                return "u1";
+            case PrimitiveKind.UInt8:
+                return "u8";
+            case PrimitiveKind.UInt16:
+                return "u16";
+            case PrimitiveKind.UInt32:
+                return "u32";
+            case PrimitiveKind.UInt64:
+                return "u64";
+            case PrimitiveKind.SInt8:
+                return "s8";
+            case PrimitiveKind.SInt16:
+                return "s16";
+            case PrimitiveKind.SInt32:
+                return "s32";
+            case PrimitiveKind.SInt64:
+                return "s64";
+            default:
+                return "?";
+            }
+        }
+    }
+
+    public class ReferenceType:SSAType
+    {
+        public ReferenceType(SSAType underlyingType)
+        {
+            if (underlyingType == null)
+                throw new ArgumentNullException(nameof(underlyingType));
+            this.UnderlyingType = underlyingType;
+        }
+
+        public SSAType UnderlyingType{ get; private set; }
+
+        public override string ToString()
+        {
+            return "&" + this.UnderlyingType.ToString();
+        }
     }
 }
 

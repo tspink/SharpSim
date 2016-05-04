@@ -81,6 +81,30 @@ public partial class ArchFileBaseListener : IArchFileListener {
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitIsa_block_def([NotNull] ArchFileParser.Isa_block_defContext context) { }
 	/// <summary>
+	/// Enter a parse tree produced by <see cref="ArchFileParser.format_def"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterFormat_def([NotNull] ArchFileParser.Format_defContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="ArchFileParser.format_def"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitFormat_def([NotNull] ArchFileParser.Format_defContext context) { }
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="ArchFileParser.format_field_def"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterFormat_field_def([NotNull] ArchFileParser.Format_field_defContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="ArchFileParser.format_field_def"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitFormat_field_def([NotNull] ArchFileParser.Format_field_defContext context) { }
+	/// <summary>
 	/// Enter a parse tree produced by <see cref="ArchFileParser.behaviour_def"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>

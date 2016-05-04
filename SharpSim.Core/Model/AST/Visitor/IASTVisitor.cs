@@ -79,6 +79,10 @@ namespace SharpSim.Model.AST.Visitor
         void VisitBitwiseOperator(BitwiseOperator bitop);
 
         void VisitCastOperator(CastOperator castop);
+
+        void VisitFormatDefinition(FormatDefinition formatDef);
+
+        void VisitFormatFieldDefinition(FormatFieldDefinition formatFieldDef);
     }
 }
 

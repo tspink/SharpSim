@@ -69,6 +69,26 @@ public interface IArchFileListener : IParseTreeListener {
 	/// <param name="context">The parse tree.</param>
 	void ExitIsa_block_def([NotNull] ArchFileParser.Isa_block_defContext context);
 	/// <summary>
+	/// Enter a parse tree produced by <see cref="ArchFileParser.format_def"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterFormat_def([NotNull] ArchFileParser.Format_defContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="ArchFileParser.format_def"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitFormat_def([NotNull] ArchFileParser.Format_defContext context);
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="ArchFileParser.format_field_def"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterFormat_field_def([NotNull] ArchFileParser.Format_field_defContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="ArchFileParser.format_field_def"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitFormat_field_def([NotNull] ArchFileParser.Format_field_defContext context);
+	/// <summary>
 	/// Enter a parse tree produced by <see cref="ArchFileParser.behaviour_def"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>

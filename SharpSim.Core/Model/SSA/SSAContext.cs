@@ -13,6 +13,11 @@ namespace SharpSim.Model.SSA
     {
         private Dictionary<string, SSAAction> actions = new Dictionary<string, SSAAction>();
 
+        public SSAContext()
+        {
+            CreateBuiltins();
+        }
+
         public SSAAction CreateAction(string name, SSAActionPrototype prototype)
         {
             var action = new SSAAction(this, name, prototype);
@@ -26,6 +31,12 @@ namespace SharpSim.Model.SSA
             if (!actions.TryGetValue(name, out action))
                 throw new Exception(string.Format("Action '{0}' does not exist", name));
             return action;
+        }
+
+        private void CreateBuiltins()
+        {
+            CreateAction("__builtin_update_zn_flags", new SSAActionPrototype(PrimitiveType.Void));
+            CreateAction("add_with_flags", new SSAActionPrototype(PrimitiveType.Void));
         }
     }
 }

@@ -17,6 +17,15 @@ namespace SharpSim.Model
         {
             internal InstructionField(string name, int offset, int length)
             {
+                if (string.IsNullOrEmpty(name))
+                    throw new ArgumentNullException("name");
+
+                if (offset < 0)
+                    throw new ArgumentOutOfRangeException("offset");
+
+                if (length < 1)
+                    throw new ArgumentOutOfRangeException("length");
+
                 this.Name = name;
                 this.Offset = offset;
                 this.Length = length;
@@ -31,16 +40,37 @@ namespace SharpSim.Model
             public bool Hidden{ get; set; }
 
             public bool SignExtend{ get; set; }
+
+            internal bool IntersectsWith(int offset, int length)
+            {
+                return false;
+            }
         }
 
-        public InstructionFormat()
+        public InstructionFormat(string name)
         {
+            if (string.IsNullOrEmpty(name))
+                throw new ArgumentNullException("name");
+
+            this.Name = name;
         }
 
-        public void AddField(string name, int offset, int length)
+        public string Name{ get; private set; }
+
+        public InstructionField AddField(string name, int offset, int length)
         {
-            this.fields.Add(new InstructionField(name, offset, length));
+            foreach (var existingField in this.fields) {
+                if (existingField.IntersectsWith(offset, length))
+                    throw new Exception(string.Format("Field would intersect with '{0}'.", existingField.Name));
+            }
+
+            var field = new InstructionField(name, offset, length);
+            this.fields.Add(field);
+
+            return field;
         }
+
+        public IEnumerable<InstructionField> Fields{ get { return this.fields.AsReadOnly(); } }
     }
 }
 

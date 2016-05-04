@@ -201,5 +201,17 @@ namespace SharpSim.Model.AST.Visitor
         {
             castop.Expression.Accept(this);
         }
+
+        public virtual void VisitFormatDefinition(FormatDefinition formatDef)
+        {
+            foreach (var fieldDef in formatDef.FieldDefinitions) {
+                fieldDef.Accept(this);
+            }
+        }
+
+        public virtual void VisitFormatFieldDefinition(FormatFieldDefinition formatFieldDef)
+        {
+            
+        }
     }
 }

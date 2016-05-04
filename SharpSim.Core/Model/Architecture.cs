@@ -11,6 +11,7 @@ namespace SharpSim.Model
 {
     public class Architecture
     {
+        private Dictionary<string, ISA> isas = new Dictionary<string, ISA>();
         private List<Behaviour> behaviours = new List<Behaviour>();
         private List<Helper> helpers = new List<Helper>();
 
@@ -23,6 +24,21 @@ namespace SharpSim.Model
         }
 
         public string Name{ get; private set; }
+
+        public ISA CreateISA(string name)
+        {
+            var isa = new ISA(name);
+            this.isas.Add(name, isa);
+            return isa;
+        }
+
+        public ISA GetISA(string name)
+        {
+            ISA isa;
+            if (!this.isas.TryGetValue(name, out isa))
+                throw new Exception(string.Format("ISA '{0}' does not exist", name));
+            return isa;
+        }
 
         public void AddBehaviour(Behaviour behaviour)
         {

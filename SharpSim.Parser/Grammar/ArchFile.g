@@ -30,6 +30,7 @@ AMPERSAND: '&';
 
 ARCH: 'arch';
 ISA: 'isa';
+FORMAT: 'format';
 BEHAVIOUR: 'behaviour';
 HELPER: 'helper';
 IDENT: LETTER_OR_UNDERSCORE (LETTER_OR_UNDERSCORE|DIGIT)*;
@@ -40,9 +41,13 @@ arch_ident: ARCH IDENT SEMICOLON;
 
 def: isa_block_def | behaviour_def | helper_def;
 
-isa_block_def: ISA IDENT LBRACE RBRACE SEMICOLON;
+isa_block_def: ISA name=IDENT LBRACE format_def* RBRACE SEMICOLON;
 
-behaviour_def: BEHAVIOUR LCHEV type=IDENT RCHEV name=IDENT fnbody SEMICOLON;
+format_def: FORMAT name=IDENT LBRACE format_field_def* RBRACE SEMICOLON;
+
+format_field_def: name=IDENT COLON constant SEMICOLON;
+
+behaviour_def: BEHAVIOUR LCHEV isa=IDENT DOT type=IDENT RCHEV name=IDENT fnbody SEMICOLON;
 
 helper_def: HELPER prototype fnbody SEMICOLON;
 

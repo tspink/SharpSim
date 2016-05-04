@@ -1,9 +1,21 @@
 ﻿arch arm;
 
 isa arm {
+	format DPI1 {
+		cond:4;
+		op:3;
+		func1:4;
+		s:1;
+		rn:4;
+		rd:4;
+		shift_amt:5;
+		shift_type:2;
+		subop1:1;
+		rm:4;
+	};
 };
 
-behaviour<DPI1> mov {
+behaviour<arm.DPI1> mov {
 	uint8 c;
 	uint32 imm32 = decode_imm(
 		inst.shift_type,
@@ -23,7 +35,7 @@ behaviour<DPI1> mov {
 	}
 };
 
-behaviour<DPI1> add {        
+behaviour<arm.DPI1> add {        
 	uint8 c;
 	uint32 imm32 = decode_imm(
 		inst.shift_type,
@@ -116,4 +128,8 @@ helper uint32 rori(uint32 bits, uint8 shift, uint8 carry_in, uint8 &carry_out)
 helper uint32 bitsel(uint32 val, uint8 bit)
 {
         return (val >> bit) & 1;
+};
+
+helper void return_from_exception()
+{
 };

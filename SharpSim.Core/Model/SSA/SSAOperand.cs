@@ -31,7 +31,7 @@ namespace SharpSim.Model.SSA
 
         public override string ToString()
         {
-            return "?";
+            return string.Format("{0} ?", this.Type);
         }
     }
 
@@ -54,13 +54,14 @@ namespace SharpSim.Model.SSA
     {
         public TypedSSAValueOperand(SSAType type, T value) : base(type)
         {
+            this.Value = value;
         }
 
         public T Value{ get; private set; }
 
         public override string ToString()
         {
-            return string.Format("?{0}", Value);
+            return string.Format("{0} ?{1}", this.Type, Value);
         }
     }
 
@@ -81,7 +82,7 @@ namespace SharpSim.Model.SSA
 
         public override string ToString()
         {
-            return string.Format("%{0}", this.Value.Index);
+            return string.Format("{0} %{1}", this.Type, this.Value.Index);
         }
     }
 
@@ -121,7 +122,7 @@ namespace SharpSim.Model.SSA
 
         public override string ToString()
         {
-            return string.Format("${0}", this.Value);
+            return string.Format("{0}", this.Value);
         }
     }
 
@@ -140,7 +141,7 @@ namespace SharpSim.Model.SSA
 
         public override string ToString()
         {
-            return string.Format("#{0}", this.Value);
+            return string.Format("{0} #{1}", this.Type, this.Value);
         }
     }
 

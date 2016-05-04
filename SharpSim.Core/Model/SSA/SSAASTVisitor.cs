@@ -18,13 +18,15 @@ namespace SharpSim.Model.SSA
         private SSABlock currentBlock;
         private Stack<SSAScope> scope = new Stack<SSAScope>();
         private List<Tuple<ControlFlowStatement, int>> unresolvedControlFlow = new List<Tuple<ControlFlowStatement, int>>();
+        private InstructionFormat format;
 
-        public SSAASTVisitor(SSAAction action)
+        public SSAASTVisitor(SSAAction action, InstructionFormat format)
         {
             if (action == null)
                 throw new ArgumentNullException("action");
 
             this.action = action;
+            this.format = format;
         }
 
         public override void VisitBehaviour(Behaviour behaviour)
@@ -32,13 +34,17 @@ namespace SharpSim.Model.SSA
             if (currentBlock != null)
                 throw new InvalidOperationException();
 
+            if (this.format == null)
+                throw new InvalidOperationException();
+
             currentBlock = this.action.EntryBlock;
 
             var rootScope = new SSAScope();
             scope.Push(rootScope);
 
-            // TODO: Create instruction symbols
-
+            foreach (var field in this.format.Fields) {
+                rootScope.CreateSymbol("inst." + field.Name, PrimitiveType.UInt32);
+            }
 
             base.VisitBehaviour(behaviour);
 
@@ -120,7 +126,8 @@ namespace SharpSim.Model.SSA
 
         public override void VisitFunctionCall(FunctionCall call)
         {
-            var ssa = new CallStatement(CurrentBlock.Owner.Owner.GetAction(call.Name).AsOperand());
+            var action = CurrentBlock.Owner.Owner.GetAction(call.Name);
+            var ssa = new CallStatement(action.AsOperand());
 
             foreach (var arg in call.Arguments) {
                 arg.Accept(this);
@@ -132,7 +139,7 @@ namespace SharpSim.Model.SSA
 
         public override void VisitStructAccess(StructAccess structAccess)
         {
-            var ssa = new LoadFieldStatement(CurrentScope.ResolveSymbol("inst." + structAccess.Member).AsOperand());
+            var ssa = new LoadValueStatement(CurrentScope.ResolveSymbol("inst." + structAccess.Member).AsOperand());
             currentBlock.AddStatement(ssa);
         }
 

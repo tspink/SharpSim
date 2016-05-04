@@ -19,6 +19,11 @@ namespace SharpSim.Model.SSA
         public string Name{ get; private set; }
 
         public SSAType Type{ get; private set; }
+
+        public override string ToString()
+        {
+            return string.Format("{0} ${1}", this.Type, this.Name);
+        }
     }
 }
 

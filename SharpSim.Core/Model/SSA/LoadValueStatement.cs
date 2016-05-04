@@ -20,7 +20,7 @@ namespace SharpSim.Model.SSA
         public override Fixedness Fixed
         {
             get {
-                return Fixedness.Dynamic;
+                return this.Symbol.Fixed;
             }
         }
 

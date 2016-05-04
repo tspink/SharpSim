@@ -80,13 +80,35 @@ namespace SharpSim.Parser
 
         private ISABlock BuildISABlock(ArchFileParser.Isa_block_defContext ctx)
         {
-            return new ISABlock(ctx.ISA().Symbol.ToASTLocation(filename));
+            var isa = new ISABlock(ctx.ISA().Symbol.ToASTLocation(filename), ctx.name.Text);
+
+            foreach (var format in ctx.format_def()) {
+                isa.AddFormatDefinition(BuildFormatDefinition(format));
+            }
+
+            return isa;
+        }
+
+        private FormatDefinition BuildFormatDefinition(ArchFileParser.Format_defContext ctx)
+        {
+            var formatDef = new FormatDefinition(ctx.FORMAT().Symbol.ToASTLocation(filename), ctx.name.Text);
+
+            foreach (var field in ctx.format_field_def()) {
+                formatDef.AddFieldDefinition(
+                    new FormatFieldDefinition(
+                        field.name.ToASTLocation(filename),
+                        field.name.Text,
+                        int.Parse(field.constant().GetText())));
+            }
+
+            return formatDef;
         }
 
         private Behaviour BuildBehaviour(ArchFileParser.Behaviour_defContext ctx)
         {
             return new Behaviour(
                 ctx.BEHAVIOUR().Symbol.ToASTLocation(filename),
+                ctx.isa.Text,
                 ctx.type.Text,
                 ctx.name.Text,
                 BuildBody(ctx.fnbody()));
