@@ -1,0 +1,114 @@
+﻿arch arm;
+
+isa arm {
+};
+
+behaviour<DPI1> mov {
+	uint8 c;
+	uint32 imm32 = decode_imm(
+		inst.shift_type,
+		inst.shift_amt,
+		read_register_bank(RB, inst.rm) + pc_check(inst.rm),
+		c);
+
+	write_register_bank(RB, inst.rd, imm32);
+
+	if (inst.s) {
+		__builtin_update_zn_flags(imm32);
+		write_register(C, c);
+
+		if (inst.rd == 15) {
+			return_from_exception();
+		}
+	}
+};
+
+behaviour<DPI1> add {        
+	uint8 c;
+	uint32 imm32 = decode_imm(
+		inst.shift_type,
+		inst.shift_amt,
+		read_register_bank(RB, inst.rm) + pc_check(inst.rm),
+		c);
+
+	uint32 src1m = read_register_bank(RB, inst.rn) + pc_check(inst.rn);
+	uint32 result = add_with_flags(src1m, imm32, inst.s);
+
+	write_register_bank(RB, inst.rd, result);
+};
+
+helper uint32 pc_check(uint8 idx) noinline
+{
+	return idx == 15 ? 8 : 0;
+};
+
+helper uint32 decode_imm(uint8 type, uint8 shift, uint32 bits, uint8 &carry_out) {
+	uint8 carry_in = read_register(C);
+	carry_out = carry_in;
+
+	uint32 val;
+	switch(type) {
+		case 0:	{
+			val = lsli(bits, shift, carry_in, carry_out);
+			break;
+		} case 1: {
+			val = lsri(bits, ((shift == 0) ? (uint8)32 : (uint8)shift), carry_in, carry_out);
+			break;
+		} case 2: {
+			val = asri(bits, ((shift == 0) ? (uint8)32 : (uint8)shift), carry_in, carry_out);
+			break;
+		} case 3: {
+			if (shift == 0) {
+				val = rrxi(bits, carry_in, carry_out);
+			} else {
+				val = rori(bits, shift, carry_in, carry_out);
+			}
+			break;
+		} default: {
+			val = 0;
+			break;
+		}
+	}
+
+	return val;
+};
+
+helper uint32 lsli(uint32 bits, uint8 shift, uint8 carry_in, uint8 &carry_out)
+{
+        carry_out = (shift == 0) ? carry_in : (uint8)(bitsel(bits, (32 - shift)));
+        return (uint32) bits << shift;
+};
+
+helper uint32 lsri(uint32 bits, uint8 shift, uint8 carry_in, uint8 &carry_out)
+{
+        uint8 carry_shift = shift - 1;
+        carry_out = shift ? (uint8)((bits >> carry_shift) & 1) : (carry_in);
+
+        return (shift == 32) ? (uint32)0 : (uint32)(bits >> shift);
+};
+
+helper uint32 asri(uint32 bits, uint8 shift, uint8 carry_in, uint8 &carry_out)
+{
+        carry_out = (((sint32)bits) >> (shift - 1)) & 1;
+
+        shift = (shift == 32) ? 31 : shift;
+
+        return ((sint32) bits) >> shift;
+};
+
+helper uint32 rrxi(uint32 bits, uint8 carry_in, uint8 &carry_out)
+{
+        carry_out = (bits & 1);
+        bits >>= 1;
+        bits |= carry_in << (uint32)31;
+        return bits;
+};
+
+helper uint32 rori(uint32 bits, uint8 shift, uint8 carry_in, uint8 &carry_out)
+{
+        shift &= 0x3f;
+
+        uint32 res = bits >>> shift;
+        carry_out = ((res & 0x80000000) != 0);
+        return res;
+};

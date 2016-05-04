@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{433B405B-8FEF-4565-814D-3F70004FD144}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>SharpSim</RootNamespace>
+    <AssemblyName>SharpSim.Core</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug</OutputPath>
+    <DefineConstants>DEBUG;</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>full</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Model\AST\ASTNode.cs" />
+    <Compile Include="Model\AST\ArchFile.cs" />
+    <Compile Include="Model\AST\ArchIdentifier.cs" />
+    <Compile Include="Model\AST\Behaviour.cs" />
+    <Compile Include="Model\AST\BinaryOperator.cs" />
+    <Compile Include="Model\AST\Expression.cs" />
+    <Compile Include="Model\AST\FunctionBody.cs" />
+    <Compile Include="Model\AST\FunctionCall.cs" />
+    <Compile Include="Model\AST\ISABlock.cs" />
+    <Compile Include="Model\AST\ReadRegisterBank.cs" />
+    <Compile Include="Model\AST\ReadRegister.cs" />
+    <Compile Include="Model\AST\Statement.cs" />
+    <Compile Include="Model\AST\StructAccess.cs" />
+    <Compile Include="Model\AST\SymbolExpression.cs" />
+    <Compile Include="Model\AST\VariableDeclaration.cs" />
+    <Compile Include="Model\AST\WriteRegisterBank.cs" />
+    <Compile Include="Model\AST\Helper.cs" />
+    <Compile Include="Model\AST\Parameter.cs" />
+    <Compile Include="Model\AST\Return.cs" />
+    <Compile Include="Model\AST\Visitor\ASTVisitor.cs" />
+    <Compile Include="Model\AST\Visitor\PrettyPrinterVisitor.cs" />
+    <Compile Include="Model\AST\AssignmentExpression.cs" />
+    <Compile Include="Model\AST\ConstantExpression.cs" />
+    <Compile Include="Model\AST\Visitor\IASTVisitor.cs" />
+    <Compile Include="Model\AST\Visitor\IASTVisitable.cs" />
+    <Compile Include="Model\AST\WriteRegister.cs" />
+    <Compile Include="Model\AST\IfStatement.cs" />
+    <Compile Include="Model\AST\EqualityOperator.cs" />
+    <Compile Include="Model\AST\AddOperator.cs" />
+    <Compile Include="Model\AST\LogicalOperator.cs" />
+    <Compile Include="Model\SSA\SSAStatement.cs" />
+    <Compile Include="Model\SSA\LoadFieldStatement.cs" />
+    <Compile Include="Model\SSA\ComparisonStatement.cs" />
+    <Compile Include="Model\SSA\BranchStatement.cs" />
+    <Compile Include="Model\SSA\ControlFlowStatement.cs" />
+    <Compile Include="Model\SSA\StoreValueStatement.cs" />
+    <Compile Include="Model\SSA\ArithmeticStatement.cs" />
+    <Compile Include="Model\SSA\BinaryStatement.cs" />
+    <Compile Include="Model\SSA\ReadPCStatement.cs" />
+    <Compile Include="Model\AST\ReadPC.cs" />
+    <Compile Include="Model\SSA\LoadRegisterStatement.cs" />
+    <Compile Include="Model\SSA\StoreRegisterStatement.cs" />
+    <Compile Include="Model\SSA\LoadValueStatement.cs" />
+    <Compile Include="Model\SSA\SSAOperand.cs" />
+    <Compile Include="Model\SSA\SSAScope.cs" />
+    <Compile Include="Model\SSA\CallStatement.cs" />
+    <Compile Include="Model\SSA\LeaveStatement.cs" />
+    <Compile Include="Model\SSA\JumpStatement.cs" />
+    <Compile Include="Model\SSA\MLAStatement.cs" />
+    <Compile Include="Model\SSA\RegisterAccessStatement.cs" />
+    <Compile Include="Diagnostics\ConsoleDiagnostics.cs" />
+    <Compile Include="Diagnostics\DiagnosticLocation.cs" />
+    <Compile Include="Diagnostics\Diagnostics.cs" />
+    <Compile Include="Diagnostics\IDiagnostics.cs" />
+    <Compile Include="Model\AST\SwitchStatement.cs" />
+    <Compile Include="Model\AST\TernaryOperator.cs" />
+    <Compile Include="Model\Architecture.cs" />
+    <Compile Include="Model\ModelBuilder.cs" />
+    <Compile Include="Model\AST\ShiftOperator.cs" />
+    <Compile Include="Model\AST\CastOperator.cs" />
+    <Compile Include="Model\AST\UnaryOperator.cs" />
+    <Compile Include="Model\AST\BitwiseOperator.cs" />
+    <Compile Include="Model\AST\Break.cs" />
+    <Compile Include="Model\Behaviour.cs" />
+    <Compile Include="Model\SSA\SSABlock.cs" />
+    <Compile Include="Model\SSA\SSAContext.cs" />
+    <Compile Include="Model\SSA\SSAASTVisitor.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <Folder Include="Model\" />
+    <Folder Include="Model\AST\" />
+    <Folder Include="Model\AST\Visitor\" />
+    <Folder Include="Model\SSA\" />
+    <Folder Include="Diagnostics\" />
+  </ItemGroup>
+</Project>
