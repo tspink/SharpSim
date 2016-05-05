@@ -89,6 +89,46 @@ public interface IArchFileListener : IParseTreeListener {
 	/// <param name="context">The parse tree.</param>
 	void ExitFormat_field_def([NotNull] ArchFileParser.Format_field_defContext context);
 	/// <summary>
+	/// Enter a parse tree produced by <see cref="ArchFileParser.regspace_def"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterRegspace_def([NotNull] ArchFileParser.Regspace_defContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="ArchFileParser.regspace_def"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitRegspace_def([NotNull] ArchFileParser.Regspace_defContext context);
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="ArchFileParser.reg_def"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterReg_def([NotNull] ArchFileParser.Reg_defContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="ArchFileParser.reg_def"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitReg_def([NotNull] ArchFileParser.Reg_defContext context);
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="ArchFileParser.reg_bank_def"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterReg_bank_def([NotNull] ArchFileParser.Reg_bank_defContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="ArchFileParser.reg_bank_def"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitReg_bank_def([NotNull] ArchFileParser.Reg_bank_defContext context);
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="ArchFileParser.reg_slot_def"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterReg_slot_def([NotNull] ArchFileParser.Reg_slot_defContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="ArchFileParser.reg_slot_def"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitReg_slot_def([NotNull] ArchFileParser.Reg_slot_defContext context);
+	/// <summary>
 	/// Enter a parse tree produced by <see cref="ArchFileParser.behaviour_def"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
@@ -258,6 +298,16 @@ public interface IArchFileListener : IParseTreeListener {
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	void ExitArgument_list([NotNull] ArchFileParser.Argument_listContext context);
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="ArchFileParser.constant_number"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterConstant_number([NotNull] ArchFileParser.Constant_numberContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="ArchFileParser.constant_number"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitConstant_number([NotNull] ArchFileParser.Constant_numberContext context);
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="ArchFileParser.constant"/>.
 	/// </summary>

@@ -108,6 +108,12 @@
     <Compile Include="Model\ISA.cs" />
     <Compile Include="Model\AST\FormatDefinition.cs" />
     <Compile Include="Model\AST\FormatFieldDefinition.cs" />
+    <Compile Include="Model\AST\RegisterSpace.cs" />
+    <Compile Include="Model\AST\RegisterBank.cs" />
+    <Compile Include="Model\AST\RegisterDefinition.cs" />
+    <Compile Include="Model\AST\RegisterSlot.cs" />
+    <Compile Include="Model\SSA\Exceptions\SSAException.cs" />
+    <Compile Include="Model\SSA\Exceptions\NoSuchActionException.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -116,5 +122,6 @@
     <Folder Include="Model\AST\Visitor\" />
     <Folder Include="Model\SSA\" />
     <Folder Include="Diagnostics\" />
+    <Folder Include="Model\SSA\Exceptions\" />
   </ItemGroup>
 </Project>

@@ -74,34 +74,45 @@ namespace SharpSim.Model
             // Load helper prototypes
             foreach (var archFile in archFiles) {
                 foreach (var helper in archFile.Helpers) {
-                    context.CreateAction(helper.Name, GeneratePrototype(helper));
+                    var proto = GeneratePrototype(helper);
+                    if (proto != null)
+                        context.CreateAction(helper.Name, proto);
                 }
             }
 
             // Create helpers
             foreach (var archFile in archFiles) {
                 foreach (var helper in archFile.Helpers) {
-                    arch.AddHelper(BuildHelper(context, helper));
+                    var o = BuildHelper(context, helper);
+                    if (o != null)
+                        arch.AddHelper(o);
                 }
             }
 
             // Create behaviours
             foreach (var archFile in archFiles) {
                 foreach (var behaviour in archFile.Behaviours) {
-                    arch.AddBehaviour(BuildBehaviour(context, arch, behaviour));
+                    var b = BuildBehaviour(context, arch, behaviour);
+                    if (b != null)
+                        arch.AddBehaviour(b);
                 }
             }
 
-            return true;
+            return !this.diag.HasErrors;
         }
 
         private Helper BuildHelper(SSA.SSAContext context, AST.Helper helper)
         {
-            var action = context.GetAction(helper.Name);
-            var visitor = new SSA.SSAASTVisitor(action, null);
-            visitor.VisitHelper(helper);
+            try {
+                var action = context.GetAction(helper.Name);
+                var visitor = new SSA.SSAASTVisitor(action, null);
+                visitor.VisitHelper(helper);
 
-            return new Helper(helper.Name, action);
+                return new Helper(helper.Name, action);
+            } catch (SSA.Exceptions.NoSuchActionException) {
+                diag.AddError(helper.Location.ToDiagnosticLocation(), "Helper prototype was not registered");
+                return null;
+            }
         }
 
         private Behaviour BuildBehaviour(SSA.SSAContext context, Architecture arch, AST.Behaviour behaviour)
@@ -115,9 +126,14 @@ namespace SharpSim.Model
 
         private SSA.SSAActionPrototype GeneratePrototype(AST.Helper helper)
         {
-            return SSA.SSAActionPrototype.FromParameters(
-                SSA.SSAType.FromString(helper.ReturnType),
-                helper.Parameters.Select(p => SSA.SSAType.FromString(p.Type)));
+            try {
+                return SSA.SSAActionPrototype.FromParameters(
+                    SSA.SSAType.FromString(helper.ReturnType),
+                    helper.Parameters.Select(p => SSA.SSAType.FromString(p.Type)));
+            } catch {
+                diag.AddError(helper.Location.ToDiagnosticLocation(), "Nope");
+                return null;
+            }
         }
 
         private SSA.SSAActionPrototype GeneratePrototype(AST.Behaviour behaviour)

@@ -213,5 +213,20 @@ namespace SharpSim.Model.AST.Visitor
         {
             
         }
+
+        public virtual void VisitRegisterSpace(RegisterSpace regspace)
+        {
+            foreach (var definition in regspace.RegisterDefinitions) {
+                definition.Accept(this);
+            }
+        }
+
+        public virtual void VisitRegisterBank(RegisterBank regbank)
+        {
+        }
+
+        public virtual void VisitRegisterSlot(RegisterSlot regslot)
+        {
+        }
     }
 }

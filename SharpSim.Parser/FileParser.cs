@@ -68,6 +68,8 @@ namespace SharpSim.Parser
             foreach (var def in ctx.def()) {
                 if (def.isa_block_def() != null) {
                     af.AddISABlock(BuildISABlock(def.isa_block_def()));
+                } else if (def.regspace_def() != null) {
+                    af.AddRegisterSpace(BuildRegisterSpace(def.regspace_def()));
                 } else if (def.behaviour_def() != null) {
                     af.AddBehaviour(BuildBehaviour(def.behaviour_def()));
                 } else if (def.helper_def() != null) {
@@ -98,10 +100,46 @@ namespace SharpSim.Parser
                     new FormatFieldDefinition(
                         field.name.ToASTLocation(filename),
                         field.name.Text,
-                        int.Parse(field.constant().GetText())));
+                        ParseConstantNumber(field.width)));
             }
 
             return formatDef;
+        }
+
+        private RegisterSpace BuildRegisterSpace(ArchFileParser.Regspace_defContext ctx)
+        {
+            var regspace = new RegisterSpace(ctx.REGSPACE().Symbol.ToASTLocation(filename));
+
+            foreach (var regdef in ctx.reg_def()) {
+                regspace.AddRegisterDefinition(BuildRegisterDefinition(regdef));
+            }
+
+            return regspace;
+        }
+
+        private RegisterDefinition BuildRegisterDefinition(ArchFileParser.Reg_defContext ctx)
+        {
+            if (ctx.reg_bank_def() != null) {
+                var bank = ctx.reg_bank_def();
+                return new RegisterBank(
+                    bank.BANK().Symbol.ToASTLocation(filename),
+                    bank.name.Text,
+                    bank.type.Text,
+                    ParseConstantNumber(bank.count),
+                    ParseConstantNumber(bank.width),
+                    ParseConstantNumber(bank.stride),
+                    ParseConstantNumber(bank.offset));
+            } else if (ctx.reg_slot_def() != null) {
+                var slot = ctx.reg_slot_def();
+                return new RegisterSlot(
+                    slot.SLOT().Symbol.ToASTLocation(filename),
+                    slot.name.Text,
+                    slot.type.Text,
+                    ParseConstantNumber(slot.width),
+                    ParseConstantNumber(slot.offset));
+            } else {
+                throw new NotImplementedException();
+            }
         }
 
         private Behaviour BuildBehaviour(ArchFileParser.Behaviour_defContext ctx)
@@ -525,14 +563,19 @@ namespace SharpSim.Parser
 
         private BaseConstantExpression BuildConstant(ArchFileParser.ConstantContext ctx)
         {
-            if (ctx.FLOAT_CONST() != null) {
-                return new FloatConstantExpression(ctx.FLOAT_CONST().Symbol.ToASTLocation(filename), 0);
-            } else if (ctx.HEX_VAL() != null) {
-                return new IntegerConstantExpression(ctx.HEX_VAL().Symbol.ToASTLocation(filename), 0);
-            } else if (ctx.INT_CONST() != null) {
-                return new IntegerConstantExpression(ctx.INT_CONST().Symbol.ToASTLocation(filename), long.Parse(ctx.INT_CONST().GetText()));
+            if (ctx.constant_number() != null) {
+                var num = ctx.constant_number();
+                if (num.FLOAT_CONST() != null) {
+                    return new FloatConstantExpression(num.FLOAT_CONST().Symbol.ToASTLocation(filename), ParseConstantNumber(num));
+                } else if (num.HEX_VAL() != null) {
+                    return new IntegerConstantExpression(num.HEX_VAL().Symbol.ToASTLocation(filename), ParseConstantNumber(num));
+                } else if (num.INT_CONST() != null) {
+                    return new IntegerConstantExpression(num.INT_CONST().Symbol.ToASTLocation(filename), ParseConstantNumber(num));
+                } else {
+                    throw new NotImplementedException();
+                }
             } else if (ctx.STRING() != null) {
-                return new StringConstantExpression(ctx.STRING().Symbol.ToASTLocation(filename), "");
+                return new StringConstantExpression(ctx.STRING().Symbol.ToASTLocation(filename), ctx.STRING().GetText());
             } else {
                 throw new NotImplementedException();
             }
@@ -602,6 +645,19 @@ namespace SharpSim.Parser
             }
 
             return call;
+        }
+
+        public int ParseConstantNumber(ArchFileParser.Constant_numberContext ctx)
+        {
+            string s = ctx.GetText();
+
+            if (ctx.HEX_VAL() != null) {
+                return int.Parse(s.Substring(2), System.Globalization.NumberStyles.AllowHexSpecifier | System.Globalization.NumberStyles.HexNumber);
+            } else if (ctx.INT_CONST() != null) {
+                return int.Parse(s);
+            } else {
+                throw new NotImplementedException();
+            }
         }
     }
 }

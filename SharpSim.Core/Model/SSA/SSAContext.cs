@@ -29,14 +29,14 @@ namespace SharpSim.Model.SSA
         {
             SSAAction action;
             if (!actions.TryGetValue(name, out action))
-                throw new Exception(string.Format("Action '{0}' does not exist", name));
+                throw new Exceptions.NoSuchActionException(name);
             return action;
         }
 
         private void CreateBuiltins()
         {
             CreateAction("__builtin_update_zn_flags", new SSAActionPrototype(PrimitiveType.Void));
-            CreateAction("add_with_flags", new SSAActionPrototype(PrimitiveType.Void));
+            CreateAction("__builtin_adc_flags", new SSAActionPrototype(PrimitiveType.Void));
         }
     }
 }

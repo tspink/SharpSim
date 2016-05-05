@@ -83,6 +83,12 @@ namespace SharpSim.Model.AST.Visitor
         void VisitFormatDefinition(FormatDefinition formatDef);
 
         void VisitFormatFieldDefinition(FormatFieldDefinition formatFieldDef);
+
+        void VisitRegisterSpace(RegisterSpace regspace);
+
+        void VisitRegisterBank(RegisterBank regbank);
+
+        void VisitRegisterSlot(RegisterSlot regslot);
     }
 }
 

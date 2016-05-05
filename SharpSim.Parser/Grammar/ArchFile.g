@@ -31,6 +31,9 @@ AMPERSAND: '&';
 ARCH: 'arch';
 ISA: 'isa';
 FORMAT: 'format';
+REGSPACE: 'regspace';
+BANK: 'bank';
+SLOT: 'slot';
 BEHAVIOUR: 'behaviour';
 HELPER: 'helper';
 IDENT: LETTER_OR_UNDERSCORE (LETTER_OR_UNDERSCORE|DIGIT)*;
@@ -39,13 +42,30 @@ start: arch_ident def*;
 
 arch_ident: ARCH IDENT SEMICOLON;
 
-def: isa_block_def | behaviour_def | helper_def;
+def: isa_block_def | regspace_def | behaviour_def | helper_def;
 
 isa_block_def: ISA name=IDENT LBRACE format_def* RBRACE SEMICOLON;
 
 format_def: FORMAT name=IDENT LBRACE format_field_def* RBRACE SEMICOLON;
 
-format_field_def: name=IDENT COLON constant SEMICOLON;
+format_field_def: name=IDENT COLON width=constant_number SEMICOLON;
+
+regspace_def: REGSPACE LBRACE reg_def* RBRACE SEMICOLON;
+
+reg_def: reg_bank_def | reg_slot_def;
+
+reg_bank_def: BANK name=IDENT LPAREN 
+	type=IDENT COMMA
+	count=constant_number COMMA
+	width=constant_number COMMA
+	stride=constant_number COMMA
+	offset=constant_number RPAREN SEMICOLON;
+
+reg_slot_def: SLOT name=IDENT LPAREN 
+	type=IDENT COMMA
+	width=constant_number COMMA
+	offset=constant_number RPAREN
+	tag=IDENT? SEMICOLON;
 
 behaviour_def: BEHAVIOUR LCHEV isa=IDENT DOT type=IDENT RCHEV name=IDENT fnbody SEMICOLON;
 
@@ -97,7 +117,9 @@ constant_expr: log_or_expression;
 
 argument_list: (expression (COMMA expression )*)?;
 
-constant: HEX_VAL | INT_CONST | FLOAT_CONST | STRING;
+constant_number: HEX_VAL | INT_CONST | FLOAT_CONST;
+
+constant: constant_number | STRING;
 
 primary_expression
 	: call_expression

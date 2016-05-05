@@ -12,6 +12,7 @@ namespace SharpSim.Model.AST
     public class ArchFile : ASTNode
     {
         private List<ISABlock> isaBlocks = new List<ISABlock>();
+        private List<RegisterSpace> registerSpaces = new List<RegisterSpace>();
         private List<Behaviour> behaviours = new List<Behaviour>();
         private List<Helper> helpers = new List<Helper>();
 
@@ -27,6 +28,13 @@ namespace SharpSim.Model.AST
         public void AddISABlock(ISABlock isa)
         {
             this.isaBlocks.Add(isa);
+        }
+
+        public IEnumerable<RegisterSpace> RegisterSpaces{ get { return this.registerSpaces.AsReadOnly(); } }
+
+        public void AddRegisterSpace(RegisterSpace regspace)
+        {
+            this.registerSpaces.Add(regspace);
         }
 
         public IEnumerable<Behaviour> Behaviours{ get { return this.behaviours.AsReadOnly(); } }

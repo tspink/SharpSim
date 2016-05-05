@@ -19,14 +19,24 @@ namespace SharpSim.Model.SSA
             switch (s) {
             case "void":
                 return PrimitiveType.Void;
-            case "uint8":
+            case "bool":
+                return PrimitiveType.Boolean;
+            case "u8":
                 return PrimitiveType.UInt8;
-            case "uint16":
+            case "u16":
                 return PrimitiveType.UInt16;
-            case "uint32":
+            case "u32":
                 return PrimitiveType.UInt32;
-            case "uint64":
+            case "u64":
                 return PrimitiveType.UInt64;
+            case "s8":
+                return PrimitiveType.SInt8;
+            case "s16":
+                return PrimitiveType.SInt16;
+            case "s32":
+                return PrimitiveType.SInt32;
+            case "s64":
+                return PrimitiveType.SInt64;
             }
 
             throw new Exception(string.Format("Unrecognised type '{0}'", s));
@@ -60,6 +70,10 @@ namespace SharpSim.Model.SSA
         public static readonly PrimitiveType UInt16 = new PrimitiveType(PrimitiveKind.UInt16);
         public static readonly PrimitiveType UInt32 = new PrimitiveType(PrimitiveKind.UInt32);
         public static readonly PrimitiveType UInt64 = new PrimitiveType(PrimitiveKind.UInt64);
+        public static readonly PrimitiveType SInt8 = new PrimitiveType(PrimitiveKind.SInt8);
+        public static readonly PrimitiveType SInt16 = new PrimitiveType(PrimitiveKind.SInt16);
+        public static readonly PrimitiveType SInt32 = new PrimitiveType(PrimitiveKind.SInt32);
+        public static readonly PrimitiveType SInt64 = new PrimitiveType(PrimitiveKind.SInt64);
 
         private PrimitiveType(PrimitiveKind kind)
         {
@@ -89,6 +103,8 @@ namespace SharpSim.Model.SSA
                 return "s32";
             case PrimitiveKind.SInt64:
                 return "s64";
+            case PrimitiveKind.Void:
+                return "void";
             default:
                 return "?";
             }
