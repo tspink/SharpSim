@@ -14,6 +14,43 @@ regspace {
 	slot Q (u8, 1, 4);
 };
 
+regspace {
+	bank FPSP (single, 32, 4, 4, 0);
+	bank FPDP (double, 32, 8, 8, 0);
+
+	vector VD (single, 2, 32, 4, 4, 0);
+	vector VQ (single, 4, 16, 4, 4, 0);
+
+	vector VU8 (u8, 8, 32, 1, 1, 0);
+	vector VU16 (u16, 4, 32, 2, 2, 0);
+	vector VU32 (u32, 2, 32, 4, 4, 0);
+
+	bank VU64 (u64, 32, 8, 8, 0);
+};
+
+regspace {
+	slot T (u8, 1, 0) ISA;
+	slot M (u8, 1, 1);
+	slot F (u8, 1, 2);
+	slot I (u8, 1, 3);
+	slot cpV (u8, 1, 4);
+
+	slot SPSR (u32, 4, 8);
+	slot DACR (u32, 4, 12);
+	slot TTBR0 (u32, 4, 16);
+	slot TTBR1 (u32, 4, 20);
+	slot TTBCR (u32, 4, 24);
+	slot DFSR (u32, 4, 28);
+	slot IFSR (u32, 4, 32);
+	slot DFAR (u32, 4, 36);
+	slot IFAR (u32, 4, 40);
+
+	slot CP_Status (u32, 4, 44);
+
+	slot TPID (u32, 4, 48);
+	slot CTXID (u32, 4, 52);
+};
+
 isa arm {
 	format DPI1 {
 		cond:4;

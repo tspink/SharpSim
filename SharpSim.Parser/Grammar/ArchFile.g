@@ -33,6 +33,7 @@ ISA: 'isa';
 FORMAT: 'format';
 REGSPACE: 'regspace';
 BANK: 'bank';
+VECTOR: 'vector';
 SLOT: 'slot';
 BEHAVIOUR: 'behaviour';
 HELPER: 'helper';
@@ -52,10 +53,18 @@ format_field_def: name=IDENT COLON width=constant_number SEMICOLON;
 
 regspace_def: REGSPACE LBRACE reg_def* RBRACE SEMICOLON;
 
-reg_def: reg_bank_def | reg_slot_def;
+reg_def: reg_bank_def | vector_reg_def | reg_slot_def;
 
 reg_bank_def: BANK name=IDENT LPAREN 
 	type=IDENT COMMA
+	count=constant_number COMMA
+	width=constant_number COMMA
+	stride=constant_number COMMA
+	offset=constant_number RPAREN SEMICOLON;
+
+vector_reg_def: VECTOR name=IDENT LPAREN 
+	type=IDENT COMMA
+	arity=constant_number COMMA
 	count=constant_number COMMA
 	width=constant_number COMMA
 	stride=constant_number COMMA

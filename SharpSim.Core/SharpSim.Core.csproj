@@ -114,6 +114,10 @@
     <Compile Include="Model\AST\RegisterSlot.cs" />
     <Compile Include="Model\SSA\Exceptions\SSAException.cs" />
     <Compile Include="Model\SSA\Exceptions\NoSuchActionException.cs" />
+    <Compile Include="Model\RegisterFile.cs" />
+    <Compile Include="Model\AST\VectorRegisterBank.cs" />
+    <Compile Include="Model\SSA\Exceptions\DuplicateActionException.cs" />
+    <Compile Include="Model\AST\ComparisonOperator.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

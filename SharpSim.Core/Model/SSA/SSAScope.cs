@@ -30,6 +30,9 @@ namespace SharpSim.Model.SSA
 
         public SSASymbol CreateSymbol(string name, SSAType type)
         {
+            if (this.localSymbols.ContainsKey(name))
+                throw new Exception("Symbol already in local scope");
+
             var symbol = new SSASymbol(name, type);
             localSymbols.Add(name, symbol);
             return symbol;
@@ -45,6 +48,22 @@ namespace SharpSim.Model.SSA
                 throw new Exception(string.Format("Symbol '{0}' not found in scope", name));
             
             return this.Parent.ResolveSymbol(name);
+        }
+
+        public bool InLocalScope(string name)
+        {
+            return localSymbols.ContainsKey(name);
+        }
+
+        public bool InAnyParentScope(string name)
+        {
+            var scope = this.Parent;
+            while (scope != null) {
+                if (scope.InLocalScope(name))
+                    return true;
+                scope = scope.Parent;
+            }
+            return false;
         }
     }
 }

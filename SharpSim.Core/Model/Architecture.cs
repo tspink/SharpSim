@@ -21,9 +21,13 @@ namespace SharpSim.Model
                 throw new ArgumentNullException("name");
 
             this.Name = name;
+
+            this.RegisterFile = new RegisterFile();
         }
 
         public string Name{ get; private set; }
+
+        public RegisterFile RegisterFile{ get; private set; }
 
         public ISA CreateISA(string name)
         {

@@ -14,6 +14,14 @@ namespace SharpSim.Model.SSA
         {
         }
 
+        public static SSAType FromString(string s, bool refType)
+        {
+            if (!refType)
+                return FromString(s);
+            else
+                return FromString(s).CreateReferenceType();
+        }
+
         public static SSAType FromString(string s)
         {
             switch (s) {
@@ -37,6 +45,10 @@ namespace SharpSim.Model.SSA
                 return PrimitiveType.SInt32;
             case "s64":
                 return PrimitiveType.SInt64;
+            case "single":
+                return PrimitiveType.Single;
+            case "double":
+                return PrimitiveType.Double;
             }
 
             throw new Exception(string.Format("Unrecognised type '{0}'", s));
@@ -59,7 +71,9 @@ namespace SharpSim.Model.SSA
         SInt8,
         SInt16,
         SInt32,
-        SInt64
+        SInt64,
+        Single,
+        Double
     }
 
     public class PrimitiveType : SSAType
@@ -74,6 +88,8 @@ namespace SharpSim.Model.SSA
         public static readonly PrimitiveType SInt16 = new PrimitiveType(PrimitiveKind.SInt16);
         public static readonly PrimitiveType SInt32 = new PrimitiveType(PrimitiveKind.SInt32);
         public static readonly PrimitiveType SInt64 = new PrimitiveType(PrimitiveKind.SInt64);
+        public static readonly PrimitiveType Single = new PrimitiveType(PrimitiveKind.Single);
+        public static readonly PrimitiveType Double = new PrimitiveType(PrimitiveKind.Double);
 
         private PrimitiveType(PrimitiveKind kind)
         {
@@ -103,6 +119,10 @@ namespace SharpSim.Model.SSA
                 return "s32";
             case PrimitiveKind.SInt64:
                 return "s64";
+            case PrimitiveKind.Single:
+                return "single";
+            case PrimitiveKind.Double:
+                return "double";
             case PrimitiveKind.Void:
                 return "void";
             default:

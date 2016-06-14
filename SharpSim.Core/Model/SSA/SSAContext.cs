@@ -20,6 +20,9 @@ namespace SharpSim.Model.SSA
 
         public SSAAction CreateAction(string name, SSAActionPrototype prototype)
         {
+            if (this.actions.ContainsKey(name))
+                throw new Exceptions.DuplicateActionException(name);
+            
             var action = new SSAAction(this, name, prototype);
             actions.Add(action.Name, action);
             return action;

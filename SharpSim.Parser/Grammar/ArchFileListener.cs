@@ -119,6 +119,16 @@ public interface IArchFileListener : IParseTreeListener {
 	/// <param name="context">The parse tree.</param>
 	void ExitReg_bank_def([NotNull] ArchFileParser.Reg_bank_defContext context);
 	/// <summary>
+	/// Enter a parse tree produced by <see cref="ArchFileParser.vector_reg_def"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterVector_reg_def([NotNull] ArchFileParser.Vector_reg_defContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="ArchFileParser.vector_reg_def"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitVector_reg_def([NotNull] ArchFileParser.Vector_reg_defContext context);
+	/// <summary>
 	/// Enter a parse tree produced by <see cref="ArchFileParser.reg_slot_def"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>

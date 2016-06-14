@@ -1,1 +1,37 @@
 ﻿arch arm;
+
+behaviour <arm.DPI1> test
+{
+	u8 a;
+	u8 b;
+	u8 c;
+
+	a = 1; 
+	b = read_register_bank(RB, 1);
+
+	if (a > b) {
+		if (inst.s) {
+			c = 0;
+		} else {
+			c = 1;
+		}
+	} else {
+		c = 2;
+	}
+
+	if (c == 2) {
+		write_register_bank(RB, 0, 5);
+	}
+};
+
+helper void testx(u8 a, u32 b)
+{
+	u8 c;
+	u8 a;
+
+	if (a > b) {
+		c = 1;
+	} else {
+		c = 0;
+	}
+};

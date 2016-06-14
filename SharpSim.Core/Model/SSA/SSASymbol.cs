@@ -8,22 +8,25 @@ using System;
 
 namespace SharpSim.Model.SSA
 {
-    public class SSASymbol
-    {
-        public SSASymbol(string name, SSAType type)
-        {
-            this.Name = name;
-            this.Type = type;
-        }
+	public class SSASymbol
+	{
+		public SSASymbol(string name, SSAType type)
+		{
+			this.Name = name;
+			this.Type = type;
+			this.Fixedness = SSAStatement.Fixedness.AlwaysFixed;
+		}
 
-        public string Name{ get; private set; }
+		public string Name{ get; private set; }
 
-        public SSAType Type{ get; private set; }
+		public SSAType Type{ get; private set; }
 
-        public override string ToString()
-        {
-            return string.Format("{0} ${1}", this.Type, this.Name);
-        }
-    }
+		public SSAStatement.Fixedness Fixedness{ get; set; }
+
+		public override string ToString()
+		{
+			return string.Format("{0} ${1}", this.Type, this.Name);
+		}
+	}
 }
 

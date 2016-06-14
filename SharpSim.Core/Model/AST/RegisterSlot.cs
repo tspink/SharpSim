@@ -10,13 +10,15 @@ namespace SharpSim.Model.AST
 {
     public class RegisterSlot : RegisterDefinition
     {
-        public RegisterSlot(ASTNode.ASTNodeLocation location, string name, string type, int width, int offset) : base(location, name, type)
+        public RegisterSlot(ASTNode.ASTNodeLocation location, string name, string tag, string type, int width, int offset) : base(location, name, type, offset)
         {
+            this.Tag = tag;
+            this.Width = width;
         }
 
-        public int Width{ get; private set; }
+        public string Tag{ get; private set; }
 
-        public int Offset{ get; private set; }
+        public int Width{ get; private set; }
 
         public override void Accept(SharpSim.Model.AST.Visitor.IASTVisitor visitor)
         {

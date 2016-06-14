@@ -141,6 +141,18 @@ public partial class ArchFileBaseListener : IArchFileListener {
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitReg_bank_def([NotNull] ArchFileParser.Reg_bank_defContext context) { }
 	/// <summary>
+	/// Enter a parse tree produced by <see cref="ArchFileParser.vector_reg_def"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterVector_reg_def([NotNull] ArchFileParser.Vector_reg_defContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="ArchFileParser.vector_reg_def"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitVector_reg_def([NotNull] ArchFileParser.Vector_reg_defContext context) { }
+	/// <summary>
 	/// Enter a parse tree produced by <see cref="ArchFileParser.reg_slot_def"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>
