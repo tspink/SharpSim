@@ -14,19 +14,25 @@ namespace SharpSim.Model
 		private Dictionary<string, InstructionFormat> formats = new Dictionary<string, InstructionFormat>();
 		private Dictionary<string, Instruction> instructions = new Dictionary<string, Instruction>();
 
-		public ISA(string name)
+		public ISA(Architecture arch, string name)
 		{
+			if (arch == null)
+				throw new ArgumentNullException(nameof(arch));
+			
 			if (string.IsNullOrEmpty(name))
 				throw new ArgumentNullException("name");
             
+			this.Architecture = arch;
 			this.Name = name;
 		}
+
+		public Architecture Architecture{ get; private set; }
 
 		public string Name{ get; private set; }
 
 		public InstructionFormat CreateInstructionFormat(string name)
 		{
-			var format = new InstructionFormat(name);
+			var format = new InstructionFormat(this, name);
 			formats.Add(name, format);
 			return format;
 		}

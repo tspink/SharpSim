@@ -33,7 +33,7 @@ namespace SharpSim.Model
 		{
 			ISA isa;
 			if (!this.isas.TryGetValue(name, out isa)) {
-				isa = new ISA(name);
+				isa = new ISA(this, name);
 				this.isas.Add(name, isa);
 			}
 

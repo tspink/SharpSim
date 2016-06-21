@@ -135,7 +135,7 @@ namespace SharpSim.Model
 			// Create helpers
 			foreach (var archFile in archFiles) {
 				foreach (var helper in archFile.Helpers) {
-					var o = BuildHelper(context, helper);
+					var o = BuildHelper(context, helper, arch);
 					if (o != null)
 						arch.AddHelper(o);
 				}
@@ -203,11 +203,11 @@ namespace SharpSim.Model
 			return !this.diag.HasErrors;
 		}
 
-		private Helper BuildHelper(SSA.SSAContext context, AST.Helper helper)
+		private Helper BuildHelper(SSA.SSAContext context, AST.Helper helper, Architecture arch)
 		{
 			try {
 				var action = context.GetAction(helper.Name);
-				var visitor = new SSA.SSAASTVisitor(this.diag, action, null);
+				var visitor = new SSA.SSAASTVisitor(this.diag, action, null, arch.RegisterFile);
 				visitor.VisitHelper(helper);
 
 				return new Helper(helper.Name, action);
@@ -221,7 +221,7 @@ namespace SharpSim.Model
 		{
 			try {
 				var action = context.CreateAction(behaviour.Name, GeneratePrototype(behaviour));
-				var visitor = new SSA.SSAASTVisitor(this.diag, action, arch.GetISA(behaviour.ISAName).GetInstructionFormat(behaviour.FormatName));
+				var visitor = new SSA.SSAASTVisitor(this.diag, action, arch.GetISA(behaviour.ISAName).GetInstructionFormat(behaviour.FormatName), arch.RegisterFile);
 				visitor.VisitBehaviour(behaviour);
 
 				return new Behaviour(behaviour.Name, action);

@@ -21,18 +21,23 @@ namespace SharpSim.Model.SSA
 		private Stack<SSAScope> scope = new Stack<SSAScope>();
 		private List<Tuple<ControlFlowStatement, int>> unresolvedControlFlow = new List<Tuple<ControlFlowStatement, int>>();
 		private InstructionFormat format;
+		private RegisterFile registerFile;
 
-		public SSAASTVisitor(IDiagnostics diagnostics, SSAAction action, InstructionFormat format)
+		public SSAASTVisitor(IDiagnostics diagnostics, SSAAction action, InstructionFormat format, RegisterFile file)
 		{
 			if (diagnostics == null)
-				throw new ArgumentNullException("diagnostics");
+				throw new ArgumentNullException(nameof(diagnostics));
             
 			if (action == null)
-				throw new ArgumentNullException("action");
+				throw new ArgumentNullException(nameof(action));
+
+			if (file == null)
+				throw new ArgumentNullException(nameof(registerFile));
 
 			this.diagnostics = diagnostics;
 			this.action = action;
 			this.format = format;
+			this.registerFile = file;
 		}
 
 		public override void VisitBehaviour(Behaviour behaviour)
@@ -105,14 +110,21 @@ namespace SharpSim.Model.SSA
 				return;
 			}
 
-			var offset = BankedRegisterOperand(readRegisterBank.Bank as SymbolExpression, readRegisterBank.Id);
-			CurrentBlock.AddStatement(new LoadRegisterStatement(offset, PrimitiveType.UInt32));
+			SSAType registerType;
+			var offset = BankedRegisterOperand(readRegisterBank.Bank as SymbolExpression, readRegisterBank.Id, out registerType);
+			CurrentBlock.AddStatement(new LoadRegisterStatement(offset, registerType));
 		}
 
 		public override void VisitReadRegister(ReadRegister readRegister)
 		{
-			var offset = RegisterOperand(readRegister.Id);
-			CurrentBlock.AddStatement(new LoadRegisterStatement(offset, PrimitiveType.UInt32));
+			if (!(readRegister.Id is SymbolExpression)) {
+				diagnostics.AddError(readRegister.Id.Location.ToDiagnosticLocation(), "Register identifier must be a symbol");
+				return;
+			}
+
+			SSAType registerType;
+			var offset = RegisterOperand((SymbolExpression)readRegister.Id, out registerType);
+			CurrentBlock.AddStatement(new LoadRegisterStatement(offset, registerType));
 		}
 
 		public override void VisitWriteRegisterBank(WriteRegisterBank writeRegisterBank)
@@ -122,21 +134,44 @@ namespace SharpSim.Model.SSA
 				return;
 			}
 
-			var offset = BankedRegisterOperand(writeRegisterBank.Bank as SymbolExpression, writeRegisterBank.Id);
+			SSAType registerType;
+			var offset = BankedRegisterOperand(writeRegisterBank.Bank as SymbolExpression, writeRegisterBank.Id, out registerType);
 			var value = ExpressionToOperand(writeRegisterBank.Value);
 
-			var ssa = new StoreRegisterStatement(value, offset, PrimitiveType.UInt32);
+			var ssa = new StoreRegisterStatement(value, offset, registerType);
 			currentBlock.AddStatement(ssa);
 		}
 
-		private SSAOperand BankedRegisterOperand(SymbolExpression bank, Expression id)
+		public override void VisitWriteRegister(WriteRegister writeRegister)
 		{
-			return new IntegerOperand(PrimitiveType.UInt32, 0);
+			if (!(writeRegister.Id is SymbolExpression)) {
+				diagnostics.AddError(writeRegister.Id.Location.ToDiagnosticLocation(), "Register identifier must be a symbol");
+				return;
+			}
+
+			SSAType registerType;
+			var offset = RegisterOperand((SymbolExpression)writeRegister.Id, out registerType);
+			var value = ExpressionToOperand(writeRegister.Value);
+			currentBlock.AddStatement(new StoreRegisterStatement(value, offset, registerType));
 		}
 
-		private SSAOperand RegisterOperand(Expression id)
+		private TypedSSAOperand BankedRegisterOperand(SymbolExpression bankSymbol, Expression id, out SSAType registerType)
 		{
-			return new IntegerOperand(PrimitiveType.UInt32, 0);
+			var bank = registerFile.GetRegisterBank(bankSymbol.Symbol);
+			registerType = bank.Type;
+
+			var mla = new MLAStatement(new IntegerOperand(PrimitiveType.UInt32, bank.Offset), ExpressionToOperand(id), new IntegerOperand(PrimitiveType.UInt32, 2));
+			currentBlock.AddStatement(mla);
+
+			return mla.AsOperand();
+		}
+
+		private TypedSSAOperand RegisterOperand(SymbolExpression id, out SSAType registerType)
+		{
+			var reg = registerFile.GetRegister(id.Symbol);
+
+			registerType = reg.Type;
+			return new IntegerOperand(PrimitiveType.UInt32, reg.Offset);
 		}
 
 		public override void VisitFunctionCall(FunctionCall call)
@@ -224,8 +259,19 @@ namespace SharpSim.Model.SSA
 
 			var postBlock = this.action.CreateBlock();
 
-			if (!(this.currentBlock.Last is ControlFlowStatement)) {
-				this.currentBlock.AddStatement(new JumpStatement(postBlock.AsOperand()));
+			if (!(trueBlock.Last is ControlFlowStatement)) {
+				trueBlock.AddStatement(new JumpStatement(postBlock.AsOperand()));
+			}
+
+			var falseBlock = postBlock;
+			if (ifStatement.IfFalse != null) {
+				falseBlock = this.action.CreateBlock();
+				this.currentBlock = falseBlock;
+				ifStatement.IfFalse.Accept(this);
+
+				if (!(falseBlock.Last is ControlFlowStatement)) {
+					falseBlock.AddStatement(new JumpStatement(postBlock.AsOperand()));
+				}
 			}
 
 			this.currentBlock = postBlock;
@@ -234,7 +280,7 @@ namespace SharpSim.Model.SSA
 				          BranchStatement.BranchPredicate.IfNonZero,
 				          ssaCond,
 				          trueBlock.AsOperand(),
-				          postBlock.AsOperand());
+				          falseBlock.AsOperand());
 
 			branchBlock.AddStatement(ssa);
 		}

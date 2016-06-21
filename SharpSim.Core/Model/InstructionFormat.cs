@@ -70,13 +70,19 @@ namespace SharpSim.Model
 			public int Value{ get; private set; }
 		}
 
-		public InstructionFormat(string name)
+		public InstructionFormat(ISA isa, string name)
 		{
+			if (isa == null)
+				throw new ArgumentNullException(nameof(isa));
+			
 			if (string.IsNullOrEmpty(name))
-				throw new ArgumentNullException("name");
+				throw new ArgumentNullException(nameof(name));
 
+			this.ISA = isa;
 			this.Name = name;
 		}
+
+		public ISA ISA{ get; private set; }
 
 		public string Name{ get; private set; }
 
