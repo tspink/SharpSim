@@ -39,7 +39,7 @@ namespace SharpSim.Model
 					return false;
 				}
 			}
-
+				
 			if (string.IsNullOrEmpty(archName)) {
 				this.diag.AddError(DiagnosticLocation.Empty, "Architecture name not declared");
 				return false;
@@ -106,7 +106,17 @@ namespace SharpSim.Model
 
 						int currentOffset = 0;
 						foreach (var field in format.FieldDefinitions) {
-							instructionFormat.AddField(field.Name, currentOffset, field.Width);
+							if (field is AST.NamedFormatFieldDefinition) {
+								instructionFormat.AddField(
+									((AST.NamedFormatFieldDefinition)field).Name,
+									currentOffset,
+									field.Width);
+							} else if (field is AST.ConstrainedFormatFieldDefinition) {
+								instructionFormat.AddConstraint(
+									((AST.ConstrainedFormatFieldDefinition)field).Value,
+									currentOffset,
+									field.Width);
+							}
 							currentOffset += field.Width;
 						}
 					}

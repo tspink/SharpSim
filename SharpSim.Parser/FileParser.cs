@@ -101,11 +101,19 @@ namespace SharpSim.Parser
 			var formatDef = new FormatDefinition(ctx.FORMAT().Symbol.ToASTLocation(filename), ctx.name.Text);
 
 			foreach (var field in ctx.format_field_def()) {
-				formatDef.AddFieldDefinition(
-					new FormatFieldDefinition(
-						field.name.ToASTLocation(filename),
-						field.name.Text,
-						ParseConstantNumber(field.width)));
+				if (field.name != null) {
+					formatDef.AddFieldDefinition(
+						new NamedFormatFieldDefinition(
+							field.name.ToASTLocation(filename),
+							ParseConstantNumber(field.width),
+							field.name.Text));
+				} else if (field.value != null) {
+					formatDef.AddFieldDefinition(
+						new ConstrainedFormatFieldDefinition(
+							field.COLON().Symbol.ToASTLocation(filename),
+							ParseConstantNumber(field.width),
+							ParseConstantNumber(field.value)));
+				}
 			}
 
 			return formatDef;

@@ -64,6 +64,10 @@ isa arm {
 		subop1:1;
 		rm:4;
 	};
+
+	format test {
+		0x08:4;
+	};
 };
 
 isa arm {

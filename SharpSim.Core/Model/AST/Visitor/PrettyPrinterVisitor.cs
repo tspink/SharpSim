@@ -48,6 +48,25 @@ namespace SharpSim.Model.AST.Visitor
 			base.VisitVectorRegisterBank(vectorRegBank);
 		}
 
+		public override void VisitFormatDefinition(FormatDefinition formatDef)
+		{
+			Console.WriteLine("Format: {0}", formatDef.Name);
+
+			base.VisitFormatDefinition(formatDef);
+		}
+
+		public override void VisitNamedFormatFieldDefinition(NamedFormatFieldDefinition formatFieldDef)
+		{
+			Console.WriteLine("  {0}:{1}", formatFieldDef.Name, formatFieldDef.Width);
+			base.VisitNamedFormatFieldDefinition(formatFieldDef);
+		}
+
+		public override void VisitConstrainedFormatFieldDefinition(ConstrainedFormatFieldDefinition formatFieldDef)
+		{
+			Console.WriteLine("  {0}:{1}", formatFieldDef.Value, formatFieldDef.Width);
+			base.VisitConstrainedFormatFieldDefinition(formatFieldDef);
+		}
+
 		public override void VisitInstruction(Instruction insn)
 		{
 			Console.WriteLine("Instruction: {0} : {1}", insn.Name, insn.FormatName);

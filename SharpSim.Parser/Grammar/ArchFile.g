@@ -57,7 +57,7 @@ isa_part: insn_def | format_def;
 
 format_def: FORMAT name=IDENT LBRACE format_field_def* RBRACE SEMICOLON;
 
-format_field_def: name=IDENT COLON width=constant_number SEMICOLON;
+format_field_def: (name=IDENT|value=constant_number) COLON width=constant_number SEMICOLON;
 
 regspace_def: REGSPACE LBRACE reg_def* RBRACE SEMICOLON;
 

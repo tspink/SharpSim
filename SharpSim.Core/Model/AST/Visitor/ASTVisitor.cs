@@ -225,7 +225,14 @@ namespace SharpSim.Model.AST.Visitor
 
 		public virtual void VisitFormatFieldDefinition(FormatFieldDefinition formatFieldDef)
 		{
-            
+		}
+
+		public virtual void VisitNamedFormatFieldDefinition(NamedFormatFieldDefinition formatFieldDef)
+		{
+		}
+
+		public virtual void VisitConstrainedFormatFieldDefinition(ConstrainedFormatFieldDefinition formatFieldDef)
+		{
 		}
 
 		public virtual void VisitRegisterSpace(RegisterSpace regspace)
