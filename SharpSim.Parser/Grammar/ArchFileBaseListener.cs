@@ -333,6 +333,18 @@ public partial class ArchFileBaseListener : IArchFileListener {
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitHelper_def([NotNull] ArchFileParser.Helper_defContext context) { }
 	/// <summary>
+	/// Enter a parse tree produced by <see cref="ArchFileParser.exception_def"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterException_def([NotNull] ArchFileParser.Exception_defContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="ArchFileParser.exception_def"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitException_def([NotNull] ArchFileParser.Exception_defContext context) { }
+	/// <summary>
 	/// Enter a parse tree produced by <see cref="ArchFileParser.prototype"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>

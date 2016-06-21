@@ -1,11 +1,15 @@
 ﻿arch arm;
 
+exception GENERAL_FAULT;
+
 behaviour <arm.dpi1> test
 {
 	u8 a;
 	u8 b;
 	u8 c;
 	float q;
+
+	if (inst.rd == 15) raise GENERAL_FAULT;
 
 	q = 5.5;
 

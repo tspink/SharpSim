@@ -54,6 +54,8 @@ namespace SharpSim.Model.AST.Visitor
 
 		void VisitBreak(Break brk);
 
+		void VisitRaise(Raise raise);
+
 		void VisitStructAccess(StructAccess structAccess);
 
 		void VisitSwitch(SwitchStatement switchStatement);
@@ -119,6 +121,8 @@ namespace SharpSim.Model.AST.Visitor
 		void VisitDisasmWhere(DisasmWhere clause);
 
 		void VisitBehaviourPart(BehaviourPart behaviour);
+
+		void VisitExceptionDeclaration(ExceptionDeclaration exceptionDeclaration);
 	}
 }
 

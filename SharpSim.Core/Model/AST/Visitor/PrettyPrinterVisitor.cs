@@ -315,6 +315,11 @@ namespace SharpSim.Model.AST.Visitor
 			Console.Write("break");
 		}
 
+		public override void VisitRaise(Raise raise)
+		{
+			Console.Write("raise {0}", raise.Value);
+		}
+
 		public override void VisitSwitch(SwitchStatement switchStatement)
 		{
 			Console.Write("switch (");

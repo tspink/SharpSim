@@ -75,11 +75,20 @@ namespace SharpSim.Model.SSA
 
 			builder.AppendLine(string.Format("SSA Block {0}:", this.Index));
 			foreach (var stmt in statements) {
-				builder.AppendFormat("[{0}:{1:000}] {2} {3}",
-					stmt.Fixed == SSAStatement.Fixedness.AlwaysFixed ? 'F' : 'D',
-					stmt.Index,
-					stmt.Type,
-					stmt);
+
+				if (stmt.Type == SSAType.None) {
+					builder.AppendFormat("[{0}:{1:000}] {2}",
+						stmt.Fixed == SSAStatement.Fixedness.AlwaysFixed ? 'F' : 'D',
+						stmt.Index,
+						stmt);
+				} else {
+					builder.AppendFormat("[{0}:{1:000}] {2} {3}",
+						stmt.Fixed == SSAStatement.Fixedness.AlwaysFixed ? 'F' : 'D',
+						stmt.Index,
+						stmt.Type,
+						stmt);
+				}
+
 				builder.AppendLine();
 			}
 

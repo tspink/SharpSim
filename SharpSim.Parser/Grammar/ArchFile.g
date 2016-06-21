@@ -43,13 +43,14 @@ DISASM: 'disasm';
 APPEND: 'append';
 WHERE: 'where';
 HELPER: 'helper';
+ZEXCEPTION: 'exception';
 IDENT: LETTER_OR_UNDERSCORE (LETTER_OR_UNDERSCORE|DIGIT)*;
 
 start: arch_ident def*;
 
 arch_ident: ARCH IDENT SEMICOLON;
 
-def: isa_block_def | regspace_def | behaviour_def | helper_def;
+def: isa_block_def | regspace_def | behaviour_def | helper_def | exception_def;
 
 isa_block_def: ISA name=IDENT LBRACE isa_part* RBRACE SEMICOLON;
 
@@ -112,6 +113,8 @@ behaviour_def: BEHAVIOUR LCHEV isa=IDENT DOT type=IDENT RCHEV name=IDENT fnbody 
 
 helper_def: HELPER prototype fnbody SEMICOLON;
 
+exception_def: ZEXCEPTION name=IDENT SEMICOLON;
+
 prototype: rtype=IDENT name=IDENT LPAREN parameter_list? RPAREN attr*;
 
 parameter_list: parameter (COMMA parameter)*;
@@ -133,7 +136,8 @@ flow_statement
 	| S='default' COLON statement
 	| S='break' SEMICOLON
 	| S='continue' SEMICOLON
-  	| S='return' expression? SEMICOLON;
+  	| S='return' expression? SEMICOLON
+  	| S='raise' expression SEMICOLON;
 
 iteration_statement
 	: 'while' LPAREN expression RPAREN statement

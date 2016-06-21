@@ -14,6 +14,7 @@ namespace SharpSim.Model
 		private Dictionary<string, ISA> isas = new Dictionary<string, ISA>();
 		private Dictionary<string, Behaviour> behaviours = new Dictionary<string, Behaviour>();
 		private List<Helper> helpers = new List<Helper>();
+		private List<ArchException> exceptions = new List<ArchException>();
 
 		public Architecture(string name)
 		{
@@ -69,6 +70,17 @@ namespace SharpSim.Model
 		public IEnumerable<Behaviour> Behaviours{ get { return behaviours.Values; } }
 
 		public IEnumerable<Helper> Helpers{ get { return helpers.AsReadOnly(); } }
+
+		public ArchException CreateException(string name)
+		{
+			var exp = new ArchException(name);
+			this.exceptions.Add(exp);
+
+			// TODO: Duplicates
+			return exp;
+		}
+
+		public IEnumerable<ArchException> Exceptions{ get { return exceptions.AsReadOnly(); } }
 	}
 }
 

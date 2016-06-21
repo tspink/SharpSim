@@ -53,6 +53,10 @@ namespace SharpSim.Model.SSA
 			var rootScope = new SSAScope();
 			scope.Push(rootScope);
 
+			foreach (var exp in this.format.ISA.Architecture.Exceptions) {
+				rootScope.CreateSymbol(exp.Name, ExceptionType.Type);
+			}
+
 			foreach (var field in this.format.Fields) {
 				rootScope.CreateSymbol("inst." + field.Name, PrimitiveType.UInt32);
 			}
@@ -101,6 +105,25 @@ namespace SharpSim.Model.SSA
 			base.VisitFunctionBody(body);
 			if (scope.Pop() != newScope)
 				throw new Exception("Unbalanced scope");
+		}
+
+		public override void VisitRaise(Raise raise)
+		{
+			if (!(raise.Value is SymbolExpression))
+				diagnostics.AddError(raise.Value.Location.ToDiagnosticLocation(), "Raise expression must be a symbol");
+
+			SSASymbol symbol;
+			try {
+				symbol = CurrentScope.ResolveSymbol(((SymbolExpression)raise.Value).Symbol);
+			} catch {
+				diagnostics.AddError(raise.Value.Location.ToDiagnosticLocation(), "Symbol '{0}' does not exist", ((SymbolExpression)raise.Value).Symbol);
+				return;
+			}
+
+			if (!(symbol.Type is ExceptionType))
+				diagnostics.AddError(raise.Value.Location.ToDiagnosticLocation(), "Raise symbol must be an exception type");
+
+			CurrentBlock.AddStatement(new RaiseStatement(symbol.AsOperand()));
 		}
 
 		public override void VisitReadRegisterBank(ReadRegisterBank readRegisterBank)
@@ -206,9 +229,21 @@ namespace SharpSim.Model.SSA
 			this.currentBlock.AddStatement(ssa);
 		}
 
-		public override void VisitSymbolExpression(SymbolExpression symbol)
+		public override void VisitSymbolExpression(SymbolExpression symbolExpression)
 		{
-			this.currentBlock.AddStatement(new LoadValueStatement(CurrentScope.ResolveSymbol(symbol.Symbol).AsOperand()));
+			SSASymbol symbol;
+
+			try {
+				symbol = CurrentScope.ResolveSymbol(symbolExpression.Symbol);
+			} catch {
+				this.diagnostics.AddError(
+					symbolExpression.Location.ToDiagnosticLocation(),
+					"Symbol '{0}' not in scope",
+					symbolExpression.Symbol);
+				return;
+			}
+
+			this.currentBlock.AddStatement(new LoadValueStatement(symbol.AsOperand()));
 		}
 
 		public override void VisitAssignmentExpression(AssignmentExpression asnExpression)
@@ -220,7 +255,17 @@ namespace SharpSim.Model.SSA
 
 			var rhs = ExpressionToOperand(asnExpression.RHS);
 
-			var sym = CurrentScope.ResolveSymbol(((SymbolExpression)asnExpression.LHS).Symbol);
+			SSASymbol sym;
+
+			try {
+				sym = CurrentScope.ResolveSymbol(((SymbolExpression)asnExpression.LHS).Symbol);
+			} catch {
+				this.diagnostics.AddError(
+					asnExpression.LHS.Location.ToDiagnosticLocation(),
+					"Symbol '{0}' does not exist in scope", ((SymbolExpression)asnExpression.LHS).Symbol);
+				return;
+			}
+
 			var ssa = new StoreValueStatement(rhs, sym.AsOperand());
 
 			if (ssa.Fixed == SSAStatement.Fixedness.Dynamic)

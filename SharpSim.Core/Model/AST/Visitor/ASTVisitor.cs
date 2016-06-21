@@ -144,6 +144,10 @@ namespace SharpSim.Model.AST.Visitor
 		{
 		}
 
+		public virtual void VisitRaise(Raise raise)
+		{
+		}
+
 		public virtual void VisitStructAccess(StructAccess structAccess)
 		{
 			structAccess.LHS.Accept(this);
@@ -307,6 +311,10 @@ namespace SharpSim.Model.AST.Visitor
 		}
 
 		public virtual void VisitBehaviourPart(BehaviourPart behaviour)
+		{
+		}
+
+		public virtual void VisitExceptionDeclaration(ExceptionDeclaration exceptionDeclaration)
 		{
 		}
 	}

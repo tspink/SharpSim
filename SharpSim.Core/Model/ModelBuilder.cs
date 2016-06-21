@@ -123,6 +123,13 @@ namespace SharpSim.Model
 				}
 			}
 
+			// Register Exceptions
+			foreach (var archFile in archFiles) {
+				foreach (var decl in archFile.Exceptions) {
+					arch.CreateException(decl.ExceptionType);
+				}
+			}
+
 			// Load helper prototypes
 			foreach (var archFile in archFiles) {
 				foreach (var helper in archFile.Helpers) {

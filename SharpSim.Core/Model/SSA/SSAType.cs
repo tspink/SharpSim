@@ -10,6 +10,15 @@ namespace SharpSim.Model.SSA
 {
 	public abstract class SSAType
 	{
+		public static readonly SSAType None = new NoneType();
+
+		private class NoneType:SSAType
+		{
+			internal NoneType()
+			{
+			}
+		}
+
 		public SSAType()
 		{
 		}
@@ -146,6 +155,20 @@ namespace SharpSim.Model.SSA
 		public override string ToString()
 		{
 			return "&" + this.UnderlyingType.ToString();
+		}
+	}
+
+	public class ExceptionType : SSAType
+	{
+		public static readonly ExceptionType Type = new SharpSim.Model.SSA.ExceptionType();
+
+		private ExceptionType()
+		{
+		}
+
+		public override string ToString()
+		{
+			return string.Format("[ExceptionType]");
 		}
 	}
 }

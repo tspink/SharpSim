@@ -30,7 +30,7 @@ namespace SharpSim.Model.SSA
 
 		public override SSAType Type {
 			get {
-				return PrimitiveType.Void;
+				return SSAType.None;
 			}
 		}
 

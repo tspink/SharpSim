@@ -15,6 +15,7 @@ namespace SharpSim.Model.AST
 		private List<RegisterSpace> registerSpaces = new List<RegisterSpace>();
 		private List<Behaviour> behaviours = new List<Behaviour>();
 		private List<Helper> helpers = new List<Helper>();
+		private List<ExceptionDeclaration> exceptions = new List<ExceptionDeclaration>();
 
 		public ArchFile(ASTNode.ASTNodeLocation location, ArchIdentifier ident)
 			: base(location)
@@ -52,6 +53,13 @@ namespace SharpSim.Model.AST
 		public void AddHelper(Helper helper)
 		{
 			this.helpers.Add(helper);
+		}
+
+		public IEnumerable<ExceptionDeclaration> Exceptions{ get { return this.exceptions.AsReadOnly(); } }
+
+		public void AddExceptionDeclaration(ExceptionDeclaration exception)
+		{
+			this.exceptions.Add(exception);
 		}
 
 		public override void Accept(Visitor.IASTVisitor visitor)

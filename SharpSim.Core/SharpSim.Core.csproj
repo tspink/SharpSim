@@ -123,6 +123,10 @@
     <Compile Include="Model\AST\MatchExpression.cs" />
     <Compile Include="Model\AST\DisasmStatement.cs" />
     <Compile Include="Model\Instruction.cs" />
+    <Compile Include="Model\AST\Raise.cs" />
+    <Compile Include="Model\SSA\RaiseStatement.cs" />
+    <Compile Include="Model\AST\ExceptionDeclaration.cs" />
+    <Compile Include="Model\ArchException.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

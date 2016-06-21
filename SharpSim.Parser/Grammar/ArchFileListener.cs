@@ -279,6 +279,16 @@ public interface IArchFileListener : IParseTreeListener {
 	/// <param name="context">The parse tree.</param>
 	void ExitHelper_def([NotNull] ArchFileParser.Helper_defContext context);
 	/// <summary>
+	/// Enter a parse tree produced by <see cref="ArchFileParser.exception_def"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterException_def([NotNull] ArchFileParser.Exception_defContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="ArchFileParser.exception_def"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitException_def([NotNull] ArchFileParser.Exception_defContext context);
+	/// <summary>
 	/// Enter a parse tree produced by <see cref="ArchFileParser.prototype"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>

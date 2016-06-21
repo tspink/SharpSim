@@ -73,6 +73,10 @@ namespace SharpSim.Parser
 					af.AddBehaviour(BuildBehaviour(def.behaviour_def()));
 				} else if (def.helper_def() != null) {
 					af.AddHelper(BuildHelper(def.helper_def()));
+				} else if (def.exception_def() != null) {
+					af.AddExceptionDeclaration(new ExceptionDeclaration(
+						def.exception_def().ZEXCEPTION().Symbol.ToASTLocation(filename),
+						def.exception_def().name.Text));
 				}
 			}
 
@@ -392,6 +396,8 @@ namespace SharpSim.Parser
 				}
 			} else if (ctx.S.Text == "break") {
 				return new Break(ctx.S.ToASTLocation(filename));
+			} else if (ctx.S.Text == "raise") {
+				return new Raise(ctx.S.ToASTLocation(filename), BuildExpression(ctx.expression()));
 			} else {
 				throw new NotImplementedException();
 			}
