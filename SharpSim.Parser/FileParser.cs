@@ -69,8 +69,6 @@ namespace SharpSim.Parser
 					af.AddISABlock(BuildISABlock(def.isa_block_def()));
 				} else if (def.regspace_def() != null) {
 					af.AddRegisterSpace(BuildRegisterSpace(def.regspace_def()));
-				} else if (def.insn_def() != null) {
-					af.AddInstruction(BuildInstruction(def.insn_def()));
 				} else if (def.behaviour_def() != null) {
 					af.AddBehaviour(BuildBehaviour(def.behaviour_def()));
 				} else if (def.helper_def() != null) {
@@ -85,8 +83,14 @@ namespace SharpSim.Parser
 		{
 			var isa = new ISABlock(ctx.ISA().Symbol.ToASTLocation(filename), ctx.name.Text);
 
-			foreach (var format in ctx.format_def()) {
-				isa.AddFormatDefinition(BuildFormatDefinition(format));
+			foreach (var part in ctx.isa_part()) {
+				if (part.format_def() != null) {
+					isa.AddFormatDefinition(BuildFormatDefinition(part.format_def()));
+				} else if (part.insn_def() != null) {
+					isa.AddInstruction(BuildInstruction(part.insn_def()));
+				} else {
+					throw new NotSupportedException();
+				}
 			}
 
 			return isa;
@@ -123,7 +127,7 @@ namespace SharpSim.Parser
 			var insn = new Instruction(
 				           ctx.INSTRUCTION().Symbol.ToASTLocation(filename),
 				           ctx.name.Text,
-				           ctx.isa.Text + "." + ctx.type.Text
+				           ctx.format.Text
 			           );
 
 			foreach (var part in ctx.insn_part()) {
@@ -784,6 +788,23 @@ namespace SharpSim.Parser
 				return int.Parse(s.Substring(2), System.Globalization.NumberStyles.AllowHexSpecifier | System.Globalization.NumberStyles.HexNumber);
 			} else if (ctx.INT_CONST() != null) {
 				return int.Parse(s);
+			} else if (ctx.FLOAT_CONST() != null) {
+				return (int)double.Parse(s);
+			} else {
+				throw new NotImplementedException();
+			}
+		}
+
+		public double ParseConstantNumberFloat(ArchFileParser.Constant_numberContext ctx)
+		{
+			string s = ctx.GetText();
+
+			if (ctx.HEX_VAL() != null) {
+				throw new InvalidOperationException();
+			} else if (ctx.INT_CONST() != null) {
+				throw new InvalidOperationException();
+			} else if (ctx.FLOAT_CONST() != null) {
+				return double.Parse(s);
 			} else {
 				throw new NotImplementedException();
 			}

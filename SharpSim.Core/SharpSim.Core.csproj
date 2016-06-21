@@ -122,6 +122,7 @@
     <Compile Include="Model\AST\InstructionPart.cs" />
     <Compile Include="Model\AST\MatchExpression.cs" />
     <Compile Include="Model\AST\DisasmStatement.cs" />
+    <Compile Include="Model\Instruction.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

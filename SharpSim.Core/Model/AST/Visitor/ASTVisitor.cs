@@ -24,9 +24,6 @@ namespace SharpSim.Model.AST.Visitor
 			foreach (var regspace in file.RegisterSpaces)
 				regspace.Accept(this);
 
-			foreach (var insn in file.Instructions)
-				insn.Accept(this);
-
 			foreach (var behaviour in file.Behaviours)
 				behaviour.Accept(this);
 
@@ -109,6 +106,11 @@ namespace SharpSim.Model.AST.Visitor
 
 		public virtual void VisitISABlock(ISABlock block)
 		{
+			foreach (var fmt in block.FormatDefinitions)
+				fmt.Accept(this);
+			
+			foreach (var insn in block.Instructions)
+				insn.Accept(this);
 		}
 
 		public virtual void VisitIfStatement(IfStatement ifStatement)

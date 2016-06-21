@@ -13,13 +13,14 @@ namespace SharpSim.Model.AST
 	{
 		private List<ISABlock> isaBlocks = new List<ISABlock>();
 		private List<RegisterSpace> registerSpaces = new List<RegisterSpace>();
-		private List<Instruction> instructions = new List<Instruction>();
 		private List<Behaviour> behaviours = new List<Behaviour>();
 		private List<Helper> helpers = new List<Helper>();
 
 		public ArchFile(ASTNode.ASTNodeLocation location, ArchIdentifier ident)
 			: base(location)
 		{
+			if (ident == null)
+				throw new ArgumentNullException(nameof(ident));
 			this.Identifier = ident;
 		}
 
@@ -37,13 +38,6 @@ namespace SharpSim.Model.AST
 		public void AddRegisterSpace(RegisterSpace regspace)
 		{
 			this.registerSpaces.Add(regspace);
-		}
-
-		public IEnumerable<Instruction> Instructions{ get { return this.instructions.AsReadOnly(); } }
-
-		public void AddInstruction(Instruction instruction)
-		{
-			this.instructions.Add(instruction);
 		}
 
 		public IEnumerable<Behaviour> Behaviours{ get { return this.behaviours.AsReadOnly(); } }

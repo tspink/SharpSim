@@ -81,6 +81,18 @@ public partial class ArchFileBaseListener : IArchFileListener {
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitIsa_block_def([NotNull] ArchFileParser.Isa_block_defContext context) { }
 	/// <summary>
+	/// Enter a parse tree produced by <see cref="ArchFileParser.isa_part"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterIsa_part([NotNull] ArchFileParser.Isa_partContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="ArchFileParser.isa_part"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitIsa_part([NotNull] ArchFileParser.Isa_partContext context) { }
+	/// <summary>
 	/// Enter a parse tree produced by <see cref="ArchFileParser.format_def"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>

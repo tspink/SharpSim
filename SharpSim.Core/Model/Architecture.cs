@@ -9,54 +9,66 @@ using System.Collections.Generic;
 
 namespace SharpSim.Model
 {
-    public class Architecture
-    {
-        private Dictionary<string, ISA> isas = new Dictionary<string, ISA>();
-        private List<Behaviour> behaviours = new List<Behaviour>();
-        private List<Helper> helpers = new List<Helper>();
+	public class Architecture
+	{
+		private Dictionary<string, ISA> isas = new Dictionary<string, ISA>();
+		private Dictionary<string, Behaviour> behaviours = new Dictionary<string, Behaviour>();
+		private List<Helper> helpers = new List<Helper>();
 
-        public Architecture(string name)
-        {
-            if (string.IsNullOrEmpty(name))
-                throw new ArgumentNullException("name");
+		public Architecture(string name)
+		{
+			if (string.IsNullOrEmpty(name))
+				throw new ArgumentNullException("name");
 
-            this.Name = name;
+			this.Name = name;
 
-            this.RegisterFile = new RegisterFile();
-        }
+			this.RegisterFile = new RegisterFile();
+		}
 
-        public string Name{ get; private set; }
+		public string Name{ get; private set; }
 
-        public RegisterFile RegisterFile{ get; private set; }
+		public RegisterFile RegisterFile{ get; private set; }
 
-        public ISA CreateISA(string name)
-        {
-            var isa = new ISA(name);
-            this.isas.Add(name, isa);
-            return isa;
-        }
+		public ISA GetOrCreateISA(string name)
+		{
+			ISA isa;
+			if (!this.isas.TryGetValue(name, out isa)) {
+				isa = new ISA(name);
+				this.isas.Add(name, isa);
+			}
 
-        public ISA GetISA(string name)
-        {
-            ISA isa;
-            if (!this.isas.TryGetValue(name, out isa))
-                throw new Exception(string.Format("ISA '{0}' does not exist", name));
-            return isa;
-        }
+			return isa;
+		}
 
-        public void AddBehaviour(Behaviour behaviour)
-        {
-            this.behaviours.Add(behaviour);
-        }
+		public ISA GetISA(string name)
+		{
+			ISA isa;
+			if (!this.isas.TryGetValue(name, out isa))
+				throw new Exception(string.Format("ISA '{0}' does not exist", name));
+			return isa;
+		}
 
-        public void AddHelper(Helper helper)
-        {
-            this.helpers.Add(helper);
-        }
+		public void AddBehaviour(Behaviour behaviour)
+		{
+			this.behaviours.Add(behaviour.Name, behaviour);
+		}
 
-        public IEnumerable<Behaviour> Behaviours{ get { return behaviours.AsReadOnly(); } }
+		public Behaviour GetBehaviour(string name)
+		{
+			Behaviour behaviour;
+			if (!this.behaviours.TryGetValue(name, out behaviour))
+				throw new Exception(string.Format("Behaviour '{0}' does not exist", behaviour));
+			return behaviour;
+		}
 
-        public IEnumerable<Helper> Helpers{ get { return helpers.AsReadOnly(); } }
-    }
+		public void AddHelper(Helper helper)
+		{
+			this.helpers.Add(helper);
+		}
+
+		public IEnumerable<Behaviour> Behaviours{ get { return behaviours.Values; } }
+
+		public IEnumerable<Helper> Helpers{ get { return helpers.AsReadOnly(); } }
+	}
 }
 

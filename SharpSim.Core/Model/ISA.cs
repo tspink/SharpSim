@@ -9,35 +9,44 @@ using System.Collections.Generic;
 
 namespace SharpSim.Model
 {
-    public class ISA
-    {
-        private Dictionary<string, InstructionFormat> formats = new Dictionary<string, InstructionFormat>();
+	public class ISA
+	{
+		private Dictionary<string, InstructionFormat> formats = new Dictionary<string, InstructionFormat>();
+		private Dictionary<string, Instruction> instructions = new Dictionary<string, Instruction>();
 
-        public ISA(string name)
-        {
-            if (string.IsNullOrEmpty(name))
-                throw new ArgumentNullException("name");
+		public ISA(string name)
+		{
+			if (string.IsNullOrEmpty(name))
+				throw new ArgumentNullException("name");
             
-            this.Name = name;
-        }
+			this.Name = name;
+		}
 
-        public string Name{ get; private set; }
+		public string Name{ get; private set; }
 
-        public InstructionFormat CreateInstructionFormat(string name)
-        {
-            var format = new InstructionFormat(name);
-            formats.Add(name, format);
-            return format;
-        }
+		public InstructionFormat CreateInstructionFormat(string name)
+		{
+			var format = new InstructionFormat(name);
+			formats.Add(name, format);
+			return format;
+		}
 
-        public InstructionFormat GetInstructionFormat(string name)
-        {
-            InstructionFormat format;
-            if (!this.formats.TryGetValue(name, out format))
-                throw new Exception(string.Format("Instruction format '{0}' does not exist.", name));
+		public InstructionFormat GetInstructionFormat(string name)
+		{
+			InstructionFormat format;
+			if (!this.formats.TryGetValue(name, out format))
+				throw new Exception(string.Format("Instruction format '{0}' does not exist.", name));
 
-            return format;
-        }
-    }
+			return format;
+		}
+
+		public Instruction CreateInstruction(string name, InstructionFormat format, Behaviour behaviour)
+		{
+			var insn = new Instruction(name, format, behaviour);
+			instructions.Add(name, insn);
+
+			return insn;
+		}
+	}
 }
 

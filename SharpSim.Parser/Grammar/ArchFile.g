@@ -7,7 +7,7 @@ fragment HEXDIGIT: [A-Fa-f0-9];
 
 HEX_VAL: '0x' HEXDIGIT+;
 INT_CONST: DIGIT+;
-FLOAT_CONST: DIGIT+;
+FLOAT_CONST: '-'?('0'..'9')+ '.' ('0'..'9')+ 'f'?;
 STRING: '"' ~('"')* '"';
 
 COLON: ':';
@@ -49,9 +49,11 @@ start: arch_ident def*;
 
 arch_ident: ARCH IDENT SEMICOLON;
 
-def: isa_block_def | regspace_def | insn_def | behaviour_def | helper_def;
+def: isa_block_def | regspace_def | behaviour_def | helper_def;
 
-isa_block_def: ISA name=IDENT LBRACE format_def* RBRACE SEMICOLON;
+isa_block_def: ISA name=IDENT LBRACE isa_part* RBRACE SEMICOLON;
+
+isa_part: insn_def | format_def;
 
 format_def: FORMAT name=IDENT LBRACE format_field_def* RBRACE SEMICOLON;
 
@@ -82,7 +84,7 @@ reg_slot_def: SLOT name=IDENT LPAREN
 	offset=constant_number RPAREN
 	tag=IDENT? SEMICOLON;
 
-insn_def: INSTRUCTION LCHEV isa=IDENT DOT type=IDENT RCHEV name=IDENT LBRACE insn_part* RBRACE SEMICOLON;
+insn_def: INSTRUCTION LCHEV format=IDENT RCHEV name=IDENT LBRACE insn_part* RBRACE SEMICOLON;
 
 insn_part: match_part | disasm_part | behaviour_part;
 

@@ -144,6 +144,25 @@ namespace SharpSim.Model.SSA
 		}
 	}
 
+	public class DoubleOperand : TypedSSAValueOperand<double>
+	{
+		public DoubleOperand(PrimitiveType type, double val)
+			: base(type, val)
+		{
+		}
+
+		public override SSAStatement.Fixedness Fixed {
+			get {
+				return SSAStatement.Fixedness.AlwaysFixed;
+			}
+		}
+
+		public override string ToString()
+		{
+			return string.Format("{0} #{1}", this.Type, this.Value);
+		}
+	}
+
 	public class ActionOperand : SSAValueOperand<SSAAction>
 	{
 		public ActionOperand(SSAAction action)
@@ -188,6 +207,11 @@ namespace SharpSim.Model.SSA
 		public static IntegerOperand AsOperand(this int cv)
 		{
 			return new IntegerOperand(PrimitiveType.UInt32, (long)cv);
+		}
+
+		public static DoubleOperand AsOperand(this double cv)
+		{
+			return new DoubleOperand(PrimitiveType.Double, cv);
 		}
 
 		public static ActionOperand AsOperand(this SSAAction action)

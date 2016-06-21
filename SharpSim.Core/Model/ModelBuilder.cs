@@ -27,8 +27,8 @@ namespace SharpSim.Model
 
 			string archName = null;
 			foreach (var archFile in archFiles) {
-				var pp = new AST.Visitor.PrettyPrinterVisitor();
-				pp.VisitArchFile(archFile);
+				//var pp = new AST.Visitor.PrettyPrinterVisitor();
+				//pp.VisitArchFile(archFile);
 
 				if (archName == null) {
 					archName = archFile.Identifier.Identifier;
@@ -39,8 +39,6 @@ namespace SharpSim.Model
 					return false;
 				}
 			}
-
-			return false;
 
 			if (string.IsNullOrEmpty(archName)) {
 				this.diag.AddError(DiagnosticLocation.Empty, "Architecture name not declared");
@@ -100,8 +98,9 @@ namespace SharpSim.Model
 			// Load ISAs
 			foreach (var archFile in archFiles) {
 				foreach (var isaBlock in archFile.ISABlocks) {
-					var isa = arch.CreateISA(isaBlock.Name);
+					var isa = arch.GetOrCreateISA(isaBlock.Name);
 
+					// Load Formats
 					foreach (var format in isaBlock.FormatDefinitions) {
 						var instructionFormat = isa.CreateInstructionFormat(format.Name);
 
@@ -111,13 +110,6 @@ namespace SharpSim.Model
 							currentOffset += field.Width;
 						}
 					}
-				}
-			}
-
-			// Load instruction definitions
-			foreach (var archFile in archFiles) {
-				foreach (var insn in archFile.Instructions) {
-					//
 				}
 			}
 
@@ -145,6 +137,56 @@ namespace SharpSim.Model
 					var b = BuildBehaviour(context, arch, behaviour);
 					if (b != null)
 						arch.AddBehaviour(b);
+				}
+			}
+
+			// Load instruction definitions
+			foreach (var archFile in archFiles) {
+				foreach (var isablock in archFile.ISABlocks) {
+					var isa = arch.GetOrCreateISA(isablock.Name);
+
+					foreach (var insn in isablock.Instructions) {
+						InstructionFormat fmt;
+						try {
+							fmt = isa.GetInstructionFormat(insn.FormatName);
+						} catch {
+							this.diag.AddError(insn.Location.ToDiagnosticLocation(), "Instruction format '{0}' does not exist in ISA", insn.FormatName);
+							continue;
+						}
+
+						Behaviour behaviour = null;
+						foreach (var part in insn.Parts) {
+							if (part is AST.BehaviourPart) {
+								if (behaviour != null) {
+									this.diag.AddError(part.Location.ToDiagnosticLocation(), "Multiply defined behaviour for instruction");
+									continue;
+								}
+
+								try {
+									behaviour = arch.GetBehaviour(((AST.BehaviourPart)part).Name);
+								} catch {
+									this.diag.AddError(part.Location.ToDiagnosticLocation(), "Behaviour '{0}' does not exist", ((AST.BehaviourPart)part).Name);
+									continue;
+								}
+							}
+						}
+
+						if (behaviour == null) {
+							this.diag.AddError(insn.Location.ToDiagnosticLocation(), "Instruction '{0}' does not define its behaviour", insn.Name);
+							continue;
+						}
+
+						var instruction = isa.CreateInstruction(insn.Name, fmt, behaviour);
+						foreach (var part in insn.Parts) {
+							if (part is AST.MatchPart) {
+								//throw new NotImplementedException();
+							} else if (part is AST.DisasmPart) {
+								//throw new NotImplementedException();
+							} else if (part is AST.BehaviourPart) {
+								continue;
+							}
+						}
+					}
 				}
 			}
 

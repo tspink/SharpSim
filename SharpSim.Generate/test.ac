@@ -66,21 +66,20 @@ isa arm {
 	};
 };
 
-instruction<arm.dpi1> mov1 {
-	match (op == 0);
-	match (subop1 == 0);
-	match (func1 == 0x0d);
-	match (rn == 0);
+isa arm {
+	instruction<dpi1> mov1 {
+		match (op == 0 && subop1 == 0 && func1 == 0x0d && rn == 0);
 
-	disasm {
-		append "mov%[cond]%[sf] " ~ (cond, s);
+		disasm {
+			append "mov%[cond]%[sf] " ~ (cond, s);
 
-		where (shift_amt == 0 && shift_type == 0) {
-			append "%[reg], %[reg]" ~ (rd, rm);
+			where (shift_amt == 0 && shift_type == 0) {
+				append "%[reg], %[reg]" ~ (rd, rm);
+			};
 		};
-	};
 
-	behaviour mov;
+		behaviour mov;
+	};
 };
 
 behaviour<arm.dpi1> mov {
@@ -94,11 +93,11 @@ behaviour<arm.dpi1> mov {
 	write_register_bank(RB, inst.rd, imm32);
 
 	if (inst.s) {
-		__builtin_update_zn_flags(imm32);
-		write_register(C, c);
-
 		if (inst.rd == 15) {
 			return_from_exception();
+		} else {
+			__builtin_update_zn_flags(imm32);
+			write_register(C, c);
 		}
 	}
 };

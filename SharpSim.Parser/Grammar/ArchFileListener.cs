@@ -69,6 +69,16 @@ public interface IArchFileListener : IParseTreeListener {
 	/// <param name="context">The parse tree.</param>
 	void ExitIsa_block_def([NotNull] ArchFileParser.Isa_block_defContext context);
 	/// <summary>
+	/// Enter a parse tree produced by <see cref="ArchFileParser.isa_part"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterIsa_part([NotNull] ArchFileParser.Isa_partContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="ArchFileParser.isa_part"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitIsa_part([NotNull] ArchFileParser.Isa_partContext context);
+	/// <summary>
 	/// Enter a parse tree produced by <see cref="ArchFileParser.format_def"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>

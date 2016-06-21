@@ -228,7 +228,6 @@ namespace SharpSim.Model.SSA
 				this.currentBlock.AddStatement(new JumpStatement(postBlock.AsOperand()));
 			}
 
-
 			this.currentBlock = postBlock;
 
 			var ssa = new BranchStatement(
@@ -294,6 +293,8 @@ namespace SharpSim.Model.SSA
 		{
 			if (expr is IntegerConstantExpression) {
 				return ((IntegerConstantExpression)expr).Value.AsOperand();
+			} else if (expr is FloatConstantExpression) {
+				return ((FloatConstantExpression)expr).Value.AsOperand();
 			} else {
 				expr.Accept(this);
 			}
