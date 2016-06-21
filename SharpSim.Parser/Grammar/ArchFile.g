@@ -27,6 +27,7 @@ DOT: '.';
 STAR: '*';
 QMARK: '?';
 AMPERSAND: '&';
+TILDE: '~';
 
 ARCH: 'arch';
 ISA: 'isa';
@@ -36,6 +37,11 @@ BANK: 'bank';
 VECTOR: 'vector';
 SLOT: 'slot';
 BEHAVIOUR: 'behaviour';
+INSTRUCTION: 'instruction';
+MATCH: 'match';
+DISASM: 'disasm';
+APPEND: 'append';
+WHERE: 'where';
 HELPER: 'helper';
 IDENT: LETTER_OR_UNDERSCORE (LETTER_OR_UNDERSCORE|DIGIT)*;
 
@@ -43,7 +49,7 @@ start: arch_ident def*;
 
 arch_ident: ARCH IDENT SEMICOLON;
 
-def: isa_block_def | regspace_def | behaviour_def | helper_def;
+def: isa_block_def | regspace_def | insn_def | behaviour_def | helper_def;
 
 isa_block_def: ISA name=IDENT LBRACE format_def* RBRACE SEMICOLON;
 
@@ -75,6 +81,30 @@ reg_slot_def: SLOT name=IDENT LPAREN
 	width=constant_number COMMA
 	offset=constant_number RPAREN
 	tag=IDENT? SEMICOLON;
+
+insn_def: INSTRUCTION LCHEV isa=IDENT DOT type=IDENT RCHEV name=IDENT LBRACE insn_part* RBRACE SEMICOLON;
+
+insn_part: match_part | disasm_part | behaviour_part;
+
+match_part: MATCH match_expr SEMICOLON;
+
+match_expr: LPAREN match_expr_part RPAREN;
+
+match_expr_part
+	: field=IDENT S='==' value=constant_number
+	| lhs=match_expr_part S='&&' rhs=match_expr_part;
+
+disasm_part: DISASM LBRACE disasm_statement* RBRACE SEMICOLON;
+
+disasm_statement: disasm_append | disasm_where;
+
+disasm_append: APPEND disasm_format SEMICOLON;
+
+disasm_format: text=STRING (TILDE LPAREN IDENT (COMMA IDENT)* RPAREN)?;
+
+disasm_where: WHERE match_expr LBRACE disasm_statement* RBRACE SEMICOLON;
+
+behaviour_part: BEHAVIOUR name=IDENT SEMICOLON;
 
 behaviour_def: BEHAVIOUR LCHEV isa=IDENT DOT type=IDENT RCHEV name=IDENT fnbody SEMICOLON;
 

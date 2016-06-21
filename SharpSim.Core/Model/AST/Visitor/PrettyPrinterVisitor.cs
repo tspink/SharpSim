@@ -24,6 +24,91 @@ namespace SharpSim.Model.AST.Visitor
 			base.VisitArchIdentifier(node);
 		}
 
+		public override void VisitRegisterSpace(RegisterSpace regspace)
+		{
+			Console.WriteLine("Register Space");
+			base.VisitRegisterSpace(regspace);
+		}
+
+		public override void VisitRegisterBank(RegisterBank regbank)
+		{
+			Console.WriteLine("  Register Bank {0}", regbank.Name);
+			base.VisitRegisterBank(regbank);
+		}
+
+		public override void VisitRegisterSlot(RegisterSlot regslot)
+		{
+			Console.WriteLine("  Register Slot {0}", regslot.Name);
+			base.VisitRegisterSlot(regslot);
+		}
+
+		public override void VisitVectorRegisterBank(VectorRegisterBank vectorRegBank)
+		{
+			Console.WriteLine("  Vector Register Bank {0}", vectorRegBank.Name);
+			base.VisitVectorRegisterBank(vectorRegBank);
+		}
+
+		public override void VisitInstruction(Instruction insn)
+		{
+			Console.WriteLine("Instruction: {0} : {1}", insn.Name, insn.FormatName);
+			base.VisitInstruction(insn);
+		}
+
+		public override void VisitInstructionPart(InstructionPart part)
+		{
+			base.VisitInstructionPart(part);
+		}
+
+		public override void VisitMatchPart(MatchPart match)
+		{
+			Console.Write("  Match: ");
+			base.VisitMatchPart(match);
+			Console.WriteLine();
+		}
+
+		public override void VisitBinaryMatchExpression(BinaryMatchExpression expr)
+		{
+			Console.Write("(");
+			expr.LHS.Accept(this);
+			Console.Write(" && ");
+			expr.RHS.Accept(this);
+			Console.Write(")");
+		}
+
+		public override void VisitComparisonMatchExpression(ComparisonMatchExpression expr)
+		{
+			Console.Write("({0} == {1})", expr.InstructionField, expr.Value);
+		}
+
+		public override void VisitDisasmPart(DisasmPart disasm)
+		{
+			Console.WriteLine("Disasm:");
+			base.VisitDisasmPart(disasm);
+		}
+
+		public override void VisitDisasmAppend(DisasmAppend append)
+		{
+			Console.WriteLine("  Append: {0}", append.Format);
+			base.VisitDisasmAppend(append);
+		}
+
+		public override void VisitDisasmWhere(DisasmWhere clause)
+		{
+			Console.Write("  Where: ");
+			clause.Constraint.Accept(this);
+			Console.WriteLine(" {");
+
+			foreach (var stmt in clause.Statements) {
+				stmt.Accept(this);
+			}
+			Console.WriteLine("  }");
+		}
+
+		public override void VisitBehaviourPart(BehaviourPart behaviour)
+		{
+			Console.WriteLine("  Behaviour: {0}", behaviour.Name);
+		}
+
 		public override void VisitBehaviour(Behaviour node)
 		{
 			Console.WriteLine("Behaviour: {0}", node.Name);

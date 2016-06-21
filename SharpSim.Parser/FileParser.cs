@@ -69,6 +69,8 @@ namespace SharpSim.Parser
 					af.AddISABlock(BuildISABlock(def.isa_block_def()));
 				} else if (def.regspace_def() != null) {
 					af.AddRegisterSpace(BuildRegisterSpace(def.regspace_def()));
+				} else if (def.insn_def() != null) {
+					af.AddInstruction(BuildInstruction(def.insn_def()));
 				} else if (def.behaviour_def() != null) {
 					af.AddBehaviour(BuildBehaviour(def.behaviour_def()));
 				} else if (def.helper_def() != null) {
@@ -114,6 +116,100 @@ namespace SharpSim.Parser
 			}
 
 			return regspace;
+		}
+
+		private Instruction BuildInstruction(ArchFileParser.Insn_defContext ctx)
+		{
+			var insn = new Instruction(
+				           ctx.INSTRUCTION().Symbol.ToASTLocation(filename),
+				           ctx.name.Text,
+				           ctx.isa.Text + "." + ctx.type.Text
+			           );
+
+			foreach (var part in ctx.insn_part()) {
+				if (part.match_part() != null) {
+					insn.AddPart(BuildMatchPart(part.match_part()));
+				} else if (part.disasm_part() != null) {
+					insn.AddPart(BuildDisasmPart(part.disasm_part()));
+				} else if (part.behaviour_part() != null) {
+					insn.AddPart(new BehaviourPart(
+						part.behaviour_part().BEHAVIOUR().Symbol.ToASTLocation(filename),
+						part.behaviour_part().name.Text));
+				} else {
+					throw new NotSupportedException();
+				}
+			}
+
+			return insn;
+		}
+
+		private MatchPart BuildMatchPart(ArchFileParser.Match_partContext ctx)
+		{
+			return new MatchPart(
+				ctx.MATCH().Symbol.ToASTLocation(filename),
+				BuildMatchExpression(ctx.match_expr().match_expr_part())
+			);
+		}
+
+		private MatchExpression BuildMatchExpression(ArchFileParser.Match_expr_partContext ctx)
+		{
+			if (ctx.S.Text == "==") {
+				return new ComparisonMatchExpression(
+					ctx.S.ToASTLocation(filename),
+					ctx.field.Text,
+					ParseConstantNumber(ctx.value),
+					ComparisonMatchExpression.ComparisonMatchExpressionType.Equal);
+			} else if (ctx.S.Text == "&&") {
+				return new BinaryMatchExpression(
+					ctx.S.ToASTLocation(filename),
+					BuildMatchExpression(ctx.lhs),
+					BuildMatchExpression(ctx.rhs),
+					BinaryMatchExpression.BinaryMatchExpressionType.And);
+			} else {
+				throw new NotSupportedException();
+			}
+		}
+
+		private DisasmPart BuildDisasmPart(ArchFileParser.Disasm_partContext ctx)
+		{
+			var part = new DisasmPart(ctx.DISASM().Symbol.ToASTLocation(filename));
+
+			foreach (var stmt in ctx.disasm_statement()) {
+				part.AddDisasmStatement(BuildDisasmStatement(stmt));
+			}
+
+			return part;
+		}
+
+		private DisasmStatement BuildDisasmStatement(ArchFileParser.Disasm_statementContext ctx)
+		{
+			if (ctx.disasm_append() != null) {
+				return BuildDisasmAppend(ctx.disasm_append());
+			} else if (ctx.disasm_where() != null) {
+				return BuildDisasmWhere(ctx.disasm_where());
+			} else {
+				throw new NotSupportedException();
+			}
+		}
+
+		private DisasmAppend BuildDisasmAppend(ArchFileParser.Disasm_appendContext ctx)
+		{
+			return new DisasmAppend(
+				ctx.APPEND().Symbol.ToASTLocation(filename),
+				ctx.disasm_format().text.Text);
+		}
+
+		private DisasmWhere BuildDisasmWhere(ArchFileParser.Disasm_whereContext ctx)
+		{
+			var clause = new DisasmWhere(
+				             ctx.WHERE().Symbol.ToASTLocation(filename),
+				             BuildMatchExpression(ctx.match_expr().match_expr_part()));
+
+			foreach (var stmt in ctx.disasm_statement()) {
+				clause.AddStatement(BuildDisasmStatement(stmt));
+			}
+
+			return clause;
 		}
 
 		private RegisterDefinition BuildRegisterDefinition(ArchFileParser.Reg_defContext ctx)

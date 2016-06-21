@@ -93,6 +93,28 @@ namespace SharpSim.Model.AST.Visitor
 		void VisitRegisterSlot(RegisterSlot regslot);
 
 		void VisitComparisonOperator(ComparisonOperator comop);
+
+		void VisitInstruction(Instruction insn);
+
+		void VisitInstructionPart(InstructionPart part);
+
+		void VisitMatchPart(MatchPart match);
+
+		void VisitMatchExpression(MatchExpression expr);
+
+		void VisitBinaryMatchExpression(BinaryMatchExpression expr);
+
+		void VisitComparisonMatchExpression(ComparisonMatchExpression expr);
+
+		void VisitDisasmPart(DisasmPart disasm);
+
+		void VisitDisasmStatement(DisasmStatement stmt);
+
+		void VisitDisasmAppend(DisasmAppend append);
+
+		void VisitDisasmWhere(DisasmWhere clause);
+
+		void VisitBehaviourPart(BehaviourPart behaviour);
 	}
 }
 

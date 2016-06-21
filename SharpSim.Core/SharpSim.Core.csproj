@@ -118,6 +118,10 @@
     <Compile Include="Model\AST\VectorRegisterBank.cs" />
     <Compile Include="Model\SSA\Exceptions\DuplicateActionException.cs" />
     <Compile Include="Model\AST\ComparisonOperator.cs" />
+    <Compile Include="Model\AST\Instruction.cs" />
+    <Compile Include="Model\AST\InstructionPart.cs" />
+    <Compile Include="Model\AST\MatchExpression.cs" />
+    <Compile Include="Model\AST\DisasmStatement.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

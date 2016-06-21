@@ -52,7 +52,7 @@ regspace {
 };
 
 isa arm {
-	format DPI1 {
+	format dpi1 {
 		cond:4;
 		op:3;
 		func1:4;
@@ -66,7 +66,24 @@ isa arm {
 	};
 };
 
-behaviour<arm.DPI1> mov {
+instruction<arm.dpi1> mov1 {
+	match (op == 0);
+	match (subop1 == 0);
+	match (func1 == 0x0d);
+	match (rn == 0);
+
+	disasm {
+		append "mov%[cond]%[sf] " ~ (cond, s);
+
+		where (shift_amt == 0 && shift_type == 0) {
+			append "%[reg], %[reg]" ~ (rd, rm);
+		};
+	};
+
+	behaviour mov;
+};
+
+behaviour<arm.dpi1> mov {
 	u8 c;
 	u32 imm32 = decode_imm(
 		inst.shift_type,
@@ -86,7 +103,7 @@ behaviour<arm.DPI1> mov {
 	}
 };
 
-behaviour<arm.DPI1> add {        
+behaviour<arm.dpi1> add {        
 	u8 c;
 	u32 imm32 = decode_imm(
 		inst.shift_type,

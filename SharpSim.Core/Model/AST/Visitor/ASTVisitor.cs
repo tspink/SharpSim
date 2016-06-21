@@ -21,6 +21,12 @@ namespace SharpSim.Model.AST.Visitor
 			foreach (var isaBlock in file.ISABlocks)
 				isaBlock.Accept(this);
 
+			foreach (var regspace in file.RegisterSpaces)
+				regspace.Accept(this);
+
+			foreach (var insn in file.Instructions)
+				insn.Accept(this);
+
 			foreach (var behaviour in file.Behaviours)
 				behaviour.Accept(this);
 
@@ -236,6 +242,62 @@ namespace SharpSim.Model.AST.Visitor
 		}
 
 		public virtual void VisitVectorRegisterBank(VectorRegisterBank vectorRegBank)
+		{
+		}
+
+		public virtual void VisitInstruction(Instruction insn)
+		{
+			foreach (var part in insn.Parts) {
+				part.Accept(this);
+			}	
+		}
+
+		public virtual void VisitInstructionPart(InstructionPart part)
+		{
+		}
+
+		public virtual void VisitMatchPart(MatchPart match)
+		{
+			match.Expression.Accept(this);
+		}
+
+		public virtual void VisitMatchExpression(MatchExpression expr)
+		{
+		}
+
+		public virtual void VisitBinaryMatchExpression(BinaryMatchExpression expr)
+		{
+		}
+
+		public virtual void VisitComparisonMatchExpression(ComparisonMatchExpression expr)
+		{
+		}
+
+		public virtual void VisitDisasmPart(DisasmPart disasm)
+		{
+			foreach (var stmt in disasm.Statements) {
+				stmt.Accept(this);
+			}
+		}
+
+		public virtual void VisitDisasmStatement(DisasmStatement stmt)
+		{
+		}
+
+		public virtual void VisitDisasmAppend(DisasmAppend append)
+		{
+		}
+
+		public virtual void VisitDisasmWhere(DisasmWhere clause)
+		{
+			clause.Constraint.Accept(this);
+
+			foreach (var stmt in clause.Statements) {
+				stmt.Accept(this);
+			}
+		}
+
+		public virtual void VisitBehaviourPart(BehaviourPart behaviour)
 		{
 		}
 	}

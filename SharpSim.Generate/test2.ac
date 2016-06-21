@@ -1,6 +1,6 @@
 ﻿arch arm;
 
-behaviour <arm.DPI1> test
+behaviour <arm.dpi1> test
 {
 	u8 a;
 	u8 b;
