@@ -95,16 +95,32 @@ namespace SharpSim.Model.SSA
 				throw new Exception("Unbalanced scope");
 
 			if (!(this.currentBlock.Last is ControlFlowStatement))
-				CurrentBlock.AddStatement(new LeaveStatement());
+				CurrentBlock.AddStatement(new ReturnStatement(null));
 		}
 
 		public override void VisitFunctionBody(FunctionBody body)
 		{
 			var newScope = new SSAScope(scope.Peek());
 			scope.Push(newScope);
-			base.VisitFunctionBody(body);
+
+			foreach (var stmt in body.Statements) {
+				if (CurrentBlock.Last != null && CurrentBlock.Last is ControlFlowStatement) {
+					diagnostics.AddWarning(stmt.Location.ToDiagnosticLocation(), "Unreachable code detected");
+					break;
+				}
+
+				stmt.Accept(this);
+			}
+
 			if (scope.Pop() != newScope)
 				throw new Exception("Unbalanced scope");
+		}
+
+		public override void VisitReturn(Return ret)
+		{
+			SSAOperand operand = ret.Value == null ? null : ExpressionToOperand(ret.Value);
+
+			CurrentBlock.AddStatement(new ReturnStatement(operand));
 		}
 
 		public override void VisitRaise(Raise raise)
@@ -203,8 +219,7 @@ namespace SharpSim.Model.SSA
 			var ssa = new CallStatement(action.AsOperand());
 
 			foreach (var arg in call.Arguments) {
-				arg.Accept(this);
-				ssa.AddArgument(currentBlock.Last.AsOperand());
+				ssa.AddArgument(ExpressionToOperand(arg));
 			}
 
 			currentBlock.AddStatement(ssa);
@@ -302,24 +317,32 @@ namespace SharpSim.Model.SSA
 
 			ifStatement.IfTrue.Accept(this);
 
-			var postBlock = this.action.CreateBlock();
+			SSABlock postBlock = null;
 
 			if (!(trueBlock.Last is ControlFlowStatement)) {
+				postBlock = this.action.CreateBlock();
 				trueBlock.AddStatement(new JumpStatement(postBlock.AsOperand()));
 			}
 
-			var falseBlock = postBlock;
+			SSABlock falseBlock;
 			if (ifStatement.IfFalse != null) {
 				falseBlock = this.action.CreateBlock();
 				this.currentBlock = falseBlock;
 				ifStatement.IfFalse.Accept(this);
 
 				if (!(falseBlock.Last is ControlFlowStatement)) {
+					if (postBlock == null)
+						postBlock = this.action.CreateBlock();
 					falseBlock.AddStatement(new JumpStatement(postBlock.AsOperand()));
 				}
+			} else {
+				falseBlock = this.action.CreateBlock();
 			}
 
-			this.currentBlock = postBlock;
+			if (postBlock != null)
+				this.currentBlock = postBlock;
+			else
+				this.currentBlock = falseBlock;
 
 			var ssa = new BranchStatement(
 				          BranchStatement.BranchPredicate.IfNonZero,

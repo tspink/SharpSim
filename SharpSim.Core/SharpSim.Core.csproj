@@ -127,6 +127,7 @@
     <Compile Include="Model\SSA\RaiseStatement.cs" />
     <Compile Include="Model\AST\ExceptionDeclaration.cs" />
     <Compile Include="Model\ArchException.cs" />
+    <Compile Include="Model\SSA\ReturnStatement.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

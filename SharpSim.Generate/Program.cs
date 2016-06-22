@@ -9,52 +9,58 @@ using System.Collections.Generic;
 
 namespace SharpSim.Generate
 {
-    using Diagnostics;
-    using Model.AST;
-    using Model.AST.Visitor;
-    using Model.SSA;
-    using Parser;
+	using Diagnostics;
+	using Model.AST;
+	using Model.AST.Visitor;
+	using Model.SSA;
+	using Parser;
 
-    internal static class MainClass
-    {
-        public static void Main(string[] args)
-        {
-            var diag = new ConsoleDiagnostics();
+	internal static class MainClass
+	{
+		public static void Main(string[] args)
+		{
+			var diag = new ConsoleDiagnostics();
 
-            bool ok = true;
-            var archFiles = new List<ArchFile>();
-            foreach (var arg in args) {
-                Console.WriteLine("Parsing '{0}'...", arg);
-                var parser = new FileParser(diag, arg);
+			bool ok = true;
+			var archFiles = new List<ArchFile>();
+			foreach (var arg in args) {
+				Console.WriteLine("Parsing '{0}'...", arg);
+				var parser = new FileParser(diag, arg);
 
-                ArchFile af;
-                if (!parser.TryParse(out af)) {
-                    Console.WriteLine("Terminating due to errors in arch description '{0}'.", arg);
+				ArchFile af;
+				if (!parser.TryParse(out af)) {
+					Console.WriteLine("Terminating due to errors in arch description '{0}'.", arg);
 
-                    ok = false;
-                    break;
-                }
+					ok = false;
+					break;
+				}
 
-                archFiles.Add(af);
-            }
+				archFiles.Add(af);
+			}
 
-            if (diag.HasErrors)
-                return;
+			if (diag.HasErrors)
+				return;
 
-            var builder = new SharpSim.Model.ModelBuilder(diag);
+			var builder = new SharpSim.Model.ModelBuilder(diag);
 
-            SharpSim.Model.Architecture arch;
-            if (!builder.TryBuild(archFiles, out arch)) {
-                Console.WriteLine("Terminating due to errors building architecture model.");
-                return;
-            }
+			SharpSim.Model.Architecture arch;
+			if (!builder.TryBuild(archFiles, out arch)) {
+				Console.WriteLine("Terminating due to errors building architecture model.");
+				return;
+			}
 
-            foreach (var behaviour in arch.Behaviours) {
-                Console.WriteLine("Behaviour {0}", behaviour.Name);
-                Console.WriteLine(behaviour.Action);
-            }
+			foreach (var behaviour in arch.Behaviours) {
+				Console.WriteLine("* Behaviour {0}", behaviour.Name);
+				Console.WriteLine(behaviour.Action);
+				Console.WriteLine();
+			}
 
-            Console.WriteLine("Built Architecture '{0}'", arch.Name);
-        }
-    }
+			foreach (var helper in arch.Helpers) {
+				Console.WriteLine("* Helper {0}", helper.Name);
+				Console.WriteLine(helper.Action);
+			}
+
+			Console.WriteLine("Built Architecture '{0}'", arch.Name);
+		}
+	}
 }
