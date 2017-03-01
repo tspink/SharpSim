@@ -10,6 +10,8 @@ namespace SharpSim.Model.AST.Visitor
 {
 	public interface IASTVisitor
 	{
+		void VisitAction(Action action);
+
 		void VisitAddOperator(AddOperator addExpression);
 
 		void VisitArchFile(ArchFile file);

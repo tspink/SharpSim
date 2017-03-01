@@ -16,38 +16,38 @@ namespace SharpSim.Model
 	{
 		private IDiagnostics diag;
 
-		public ModelBuilder(IDiagnostics diag)
+		public ModelBuilder (IDiagnostics diag)
 		{
 			this.diag = diag;
 		}
 
-		public bool TryBuild(IEnumerable<Model.AST.ArchFile> archFiles, out Architecture arch)
+		public bool TryBuild (IEnumerable<Model.AST.ArchFile> archFiles, out Architecture arch)
 		{
 			arch = null;
 
 			string archName = null;
 			foreach (var archFile in archFiles) {
-				//var pp = new AST.Visitor.PrettyPrinterVisitor();
-				//pp.VisitArchFile(archFile);
+				//var pp = new AST.Visitor.PrettyPrinterVisitor ();
+				//pp.VisitArchFile (archFile);
 
 				if (archName == null) {
 					archName = archFile.Identifier.Identifier;
 				} else if (archName != archFile.Identifier.Identifier) {
-					this.diag.AddError(
-						archFile.Identifier.Location.ToDiagnosticLocation(),
+					this.diag.AddError (
+						archFile.Identifier.Location.ToDiagnosticLocation (),
 						"Multiply defined architecture identifier.  Identifier already defined as {0}", archName);
 					return false;
 				}
 			}
-				
-			if (string.IsNullOrEmpty(archName)) {
-				this.diag.AddError(DiagnosticLocation.Empty, "Architecture name not declared");
+
+			if (string.IsNullOrEmpty (archName)) {
+				this.diag.AddError (DiagnosticLocation.Empty, "Architecture name not declared");
 				return false;
 			}
 
-			arch = new Architecture(archName);
+			arch = new Architecture (archName);
 
-			var context = new SSA.SSAContext();
+			var context = new SSA.SSAContext ();
 
 			// Load register file
 			int currentBase = 0;
@@ -62,19 +62,19 @@ namespace SharpSim.Model
 					foreach (var def in regspace.RegisterDefinitions) {
 						if (def is AST.RegisterBank) {
 							var bank = def as AST.RegisterBank;
-							arch.RegisterFile.AddRegisterBank(bank.Name, bank.Type, bank.Count, bank.Width, bank.Stride, currentBase + bank.Offset);
+							arch.RegisterFile.AddRegisterBank (bank.Name, bank.Type, bank.Count, bank.Width, bank.Stride, currentBase + bank.Offset);
 							if ((bank.Offset + (bank.Stride * bank.Count)) > maximumSize) {
 								maximumSize = (bank.Offset + (bank.Stride * bank.Count));
 							}
 						} else if (def is AST.RegisterSlot) {
 							var slot = def as AST.RegisterSlot;
-							arch.RegisterFile.AddRegister(slot.Name, slot.Type, slot.Tag, slot.Width, currentBase + slot.Offset);
+							arch.RegisterFile.AddRegister (slot.Name, slot.Type, slot.Tag, slot.Width, currentBase + slot.Offset);
 							if ((slot.Offset + slot.Width) > maximumSize) {
 								maximumSize = slot.Offset + slot.Width;
 							}
 						} else if (def is AST.VectorRegisterBank) {
 							var vrb = def as AST.VectorRegisterBank;
-							arch.RegisterFile.AddVectorRegisterBank(
+							arch.RegisterFile.AddVectorRegisterBank (
 								vrb.Name,
 								vrb.Type,
 								vrb.Arity,
@@ -87,7 +87,7 @@ namespace SharpSim.Model
 								maximumSize = vrb.Offset + (vrb.Arity * vrb.Stride * vrb.Count);
 							}
 						} else {
-							throw new NotImplementedException();
+							throw new NotImplementedException ();
 						}
 					}
 
@@ -98,21 +98,21 @@ namespace SharpSim.Model
 			// Load ISAs
 			foreach (var archFile in archFiles) {
 				foreach (var isaBlock in archFile.ISABlocks) {
-					var isa = arch.GetOrCreateISA(isaBlock.Name);
+					var isa = arch.GetOrCreateISA (isaBlock.Name);
 
 					// Load Formats
 					foreach (var format in isaBlock.FormatDefinitions) {
-						var instructionFormat = isa.CreateInstructionFormat(format.Name);
+						var instructionFormat = isa.CreateInstructionFormat (format.Name);
 
 						int currentOffset = 0;
 						foreach (var field in format.FieldDefinitions) {
 							if (field is AST.NamedFormatFieldDefinition) {
-								instructionFormat.AddField(
+								instructionFormat.AddField (
 									((AST.NamedFormatFieldDefinition)field).Name,
 									currentOffset,
 									field.Width);
 							} else if (field is AST.ConstrainedFormatFieldDefinition) {
-								instructionFormat.AddConstraint(
+								instructionFormat.AddConstraint (
 									((AST.ConstrainedFormatFieldDefinition)field).Value,
 									currentOffset,
 									field.Width);
@@ -126,143 +126,206 @@ namespace SharpSim.Model
 			// Register Exceptions
 			foreach (var archFile in archFiles) {
 				foreach (var decl in archFile.Exceptions) {
-					arch.CreateException(decl.ExceptionType);
+					arch.CreateException (decl.ExceptionType);
 				}
 			}
 
-			// Load helper prototypes
+			// Generate helper prototypes
 			foreach (var archFile in archFiles) {
 				foreach (var helper in archFile.Helpers) {
-					var proto = GeneratePrototype(helper);
-					if (proto != null)
-						context.CreateAction(helper.Name, proto);
-				}
-			}
+					var prototype = GeneratePrototype (helper);
 
-			// Create helpers
-			foreach (var archFile in archFiles) {
-				foreach (var helper in archFile.Helpers) {
-					var o = BuildHelper(context, helper, arch);
-					if (o != null)
-						arch.AddHelper(o);
-				}
-			}
+					if (context.HasAction (prototype)) {
+						throw new Exception ();
+					}
 
-			// Create behaviours
-			foreach (var archFile in archFiles) {
-				foreach (var behaviour in archFile.Behaviours) {
-					var b = BuildBehaviour(context, arch, behaviour);
-					if (b != null)
-						arch.AddBehaviour(b);
+					context.CreateAction (prototype);
 				}
 			}
 
 			// Load instruction definitions
 			foreach (var archFile in archFiles) {
 				foreach (var isablock in archFile.ISABlocks) {
-					var isa = arch.GetOrCreateISA(isablock.Name);
+					var isa = arch.GetOrCreateISA (isablock.Name);
 
 					foreach (var insn in isablock.Instructions) {
 						InstructionFormat fmt;
 						try {
-							fmt = isa.GetInstructionFormat(insn.FormatName);
+							fmt = isa.GetInstructionFormat (insn.FormatName);
 						} catch {
-							this.diag.AddError(insn.Location.ToDiagnosticLocation(), "Instruction format '{0}' does not exist in ISA", insn.FormatName);
+							this.diag.AddError (insn.Location.ToDiagnosticLocation (), "Instruction format '{0}' does not exist in ISA", insn.FormatName);
 							continue;
 						}
 
-						Behaviour behaviour = null;
+						var associatedBehaviours = new List<InstructionBehaviourInstantiation> ();
 						foreach (var part in insn.Parts) {
 							if (part is AST.BehaviourPart) {
-								if (behaviour != null) {
-									this.diag.AddError(part.Location.ToDiagnosticLocation(), "Multiply defined behaviour for instruction");
-									continue;
-								}
-
+								var behaviourPart = (AST.BehaviourPart)part;
 								try {
-									behaviour = arch.GetBehaviour(((AST.BehaviourPart)part).Name);
-								} catch {
-									this.diag.AddError(part.Location.ToDiagnosticLocation(), "Behaviour '{0}' does not exist", ((AST.BehaviourPart)part).Name);
+									var behaviour = InstantiateBehaviour (arch, fmt, context, archFiles, behaviourPart.Name, behaviourPart.InstantiationTypes);
+									associatedBehaviours.Add (new InstructionBehaviourInstantiation (behaviour));
+								} catch (Exception ex) {
+									this.diag.AddError (part.Location.ToDiagnosticLocation (), "Exception whilst processing {0}: {1}", ((AST.BehaviourPart)part).Name, ex);
+									//this.diag.AddError(part.Location.ToDiagnosticLocation(), "Behaviour '{0}' does not exist", ((AST.BehaviourPart)part).Name);
 									continue;
 								}
 							}
 						}
 
-						if (behaviour == null) {
-							this.diag.AddError(insn.Location.ToDiagnosticLocation(), "Instruction '{0}' does not define its behaviour", insn.Name);
+						if (associatedBehaviours.Count == 0) {
+							this.diag.AddError (insn.Location.ToDiagnosticLocation (), "Instruction '{0}' does not define its behaviour", insn.Name);
 							continue;
 						}
 
-						var instruction = isa.CreateInstruction(insn.Name, fmt, behaviour);
+						var instruction = isa.CreateInstruction (insn.Name, fmt, associatedBehaviours);
 						foreach (var part in insn.Parts) {
 							if (part is AST.MatchPart) {
-								//throw new NotImplementedException();
+								instruction.AddDecodeMatch (BuildDecodeMatch (fmt, (AST.MatchPart)part));
 							} else if (part is AST.DisasmPart) {
 								//throw new NotImplementedException();
 							} else if (part is AST.BehaviourPart) {
 								continue;
+							} else {
+								throw new NotSupportedException ();
 							}
 						}
 					}
 				}
 			}
 
+			foreach (var archFile in archFiles) {
+				foreach (var helperDefinition in archFile.Helpers) {
+					SSA.SSAAction action;
+
+					var prototype = GeneratePrototype (helperDefinition);
+					if (!context.TryGetAction (prototype, out action, false)) {
+						diag.AddError (helperDefinition.Location.ToDiagnosticLocation (), "Helper not registered as action");
+						continue;
+					}
+
+					BuildHelper (action, helperDefinition, arch);
+				}
+			}
+
+			foreach (var action in context.Actions) {
+				if (!action.External) {
+					if (!action.HasEntryBlock) {
+						//
+					}
+
+					Console.WriteLine (action);
+				}
+			}
+
+			var optimiser = new SSA.Optimiser.SSAOptimiser (diag);
+			foreach (var action in context.Actions) {
+				if (!action.External) {
+					optimiser.OptimiseAction (action);
+				}
+			}
+
 			return !this.diag.HasErrors;
 		}
 
-		private Helper BuildHelper(SSA.SSAContext context, AST.Helper helper, Architecture arch)
+		private Instruction.DecodeMatch BuildDecodeMatch (InstructionFormat fmt, AST.MatchPart part)
 		{
-			try {
-				var action = context.GetAction(helper.Name);
-				var visitor = new SSA.SSAASTVisitor(this.diag, action, null, arch.RegisterFile);
-				visitor.VisitHelper(helper);
+			// TODO: Implement
 
-				return new Helper(helper.Name, action);
-			} catch (SSA.Exceptions.NoSuchActionException) {
-				diag.AddError(helper.Location.ToDiagnosticLocation(), "Helper prototype was not registered");
-				return null;
+
+
+			return new Instruction.DecodeMatch ();
+		}
+
+		private Behaviour InstantiateBehaviour (Architecture arch, InstructionFormat format, SSA.SSAContext context, IEnumerable<Model.AST.ArchFile> archFiles, string behaviourName, IEnumerable<string> typeArguments)
+		{
+			var targetPrototype = new SSA.SSAActionPrototype (SSA.PrimitiveType.Void, behaviourName);
+
+			foreach (var typeArgument in typeArguments) {
+				targetPrototype.AddTypeParameter (SSA.SSAType.FromString (null, typeArgument));
 			}
-		}
 
-		private Behaviour BuildBehaviour(SSA.SSAContext context, Architecture arch, AST.Behaviour behaviour)
-		{
-			try {
-				var action = context.CreateAction(behaviour.Name, GeneratePrototype(behaviour));
-				var visitor = new SSA.SSAASTVisitor(this.diag, action, arch.GetISA(behaviour.ISAName).GetInstructionFormat(behaviour.FormatName), arch.RegisterFile);
-				visitor.VisitBehaviour(behaviour);
-
-				return new Behaviour(behaviour.Name, action);
-			} catch (SSA.Exceptions.DuplicateActionException) {
-				diag.AddError(behaviour.Location.ToDiagnosticLocation(), "Behaviour name '{0}' conflicts with existing action.", behaviour.Name);
-				return null;
+			if (context.HasAction (targetPrototype)) {
+				return new Behaviour (behaviourName, context.GetAction (targetPrototype));
 			}
-		}
 
-		private SSA.SSAActionPrototype GeneratePrototype(AST.Helper helper)
-		{
-			try {
-				return SSA.SSAActionPrototype.FromParameters(
-					SSA.SSAType.FromString(helper.ReturnType),
-					helper.Parameters.Select(p => SSA.SSAType.FromString(p.Type, p.Reference)));
-			} catch {
-				diag.AddError(helper.Location.ToDiagnosticLocation(), "Exception whilst generating helper prototype");
-				return null;
+			var action = context.CreateAction (targetPrototype);
+
+			AST.Behaviour candidate = null;
+			foreach (var archFile in archFiles) {
+				foreach (var behaviour in archFile.Behaviours) {
+					if (behaviour.Name == behaviourName)
+						candidate = behaviour;
+				}
 			}
+
+			if (candidate == null)
+				throw new Exception ("Behaviour not found");
+
+			return BuildBehaviour (action, candidate, format, arch);
 		}
 
-		private SSA.SSAActionPrototype GeneratePrototype(AST.Behaviour behaviour)
+		private Behaviour BuildBehaviour (SSA.SSAAction action, Model.AST.Behaviour behaviour, InstructionFormat format, Architecture arch)
 		{
-			return new SSA.SSAActionPrototype(SSA.PrimitiveType.Void);
+			var visitor = new SSA.SSAASTVisitor (this.diag, action, format, arch.RegisterFile);
+			visitor.VisitBehaviour (behaviour);
+
+			return new Behaviour (behaviour.Name, action);
 		}
 
-		private InstructionFormat GetInstructionFormat(Architecture arch, string fqn)
+		private Helper BuildHelper (SSA.SSAAction action, Model.AST.Helper helper, Architecture arch)
 		{
-			var parts = fqn.Split('.');
+			var visitor = new SSA.SSAASTVisitor (this.diag, action, null, arch.RegisterFile);
+			visitor.VisitHelper (helper);
+
+			return new Helper (helper.Name, action);
+		}
+
+		private SSA.SSAActionPrototype GeneratePrototype (AST.Helper helper)
+		{
+			var actionPrototype = new SSA.SSAActionPrototype (SSA.SSAType.FromString (null, helper.ReturnType), helper.Name);
+
+			foreach (var typeParameter in helper.TypeParameters) {
+				SSA.SSAType typeParameterType;
+				if (!SSA.SSAType.TryFromString (null, typeParameter, out typeParameterType)) {
+					typeParameterType = new SSA.SSATypeParameter (typeParameter);
+				}
+
+				actionPrototype.AddTypeParameter (typeParameterType);
+			}
+
+			foreach (var parameter in helper.Parameters) {
+				actionPrototype.AddParameter (SSA.SSAType.FromString (null, parameter.Type));
+			}
+
+			return actionPrototype;
+		}
+
+		private SSA.SSAActionPrototype GeneratePrototype (AST.Behaviour behaviour)
+		{
+			var actionPrototype = new SSA.SSAActionPrototype (
+									  SSA.PrimitiveType.Void,
+									  behaviour.Name);
+
+			foreach (var typeParameter in behaviour.TypeParameters) {
+				SSA.SSAType typeParameterType;
+				if (!SSA.SSAType.TryFromString (null, typeParameter, out typeParameterType)) {
+					typeParameterType = new SSA.SSATypeParameter (typeParameter);
+				}
+
+				actionPrototype.AddTypeParameter (typeParameterType);
+			}
+
+			return actionPrototype;
+		}
+
+		private InstructionFormat GetInstructionFormat (Architecture arch, string fqn)
+		{
+			var parts = fqn.Split ('.');
 			if (parts.Length != 2)
-				throw new Exception("Invalid name for instruction format");
+				throw new Exception ("Invalid name for instruction format");
 
-			var isa = arch.GetISA(parts[0]);
-			return isa.GetInstructionFormat(parts[1]);
+			var isa = arch.GetISA (parts [0]);
+			return isa.GetInstructionFormat (parts [1]);
 		}
 	}
 }

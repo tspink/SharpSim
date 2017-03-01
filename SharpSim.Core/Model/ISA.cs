@@ -46,13 +46,17 @@ namespace SharpSim.Model
 			return format;
 		}
 
-		public Instruction CreateInstruction(string name, InstructionFormat format, Behaviour behaviour)
+		public IEnumerable<InstructionFormat> InstructionFormats{ get { return this.formats.Values; } }
+
+		public Instruction CreateInstruction(string name, InstructionFormat format, IEnumerable<InstructionBehaviourInstantiation> behaviours)
 		{
-			var insn = new Instruction(name, format, behaviour);
+			var insn = new Instruction(name, format, behaviours);
 			instructions.Add(name, insn);
 
 			return insn;
 		}
+
+		public IEnumerable<Instruction> Instructions{ get { return this.instructions.Values; } }
 	}
 }
 

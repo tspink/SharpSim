@@ -37,6 +37,7 @@ BANK: 'bank';
 VECTOR: 'vector';
 SLOT: 'slot';
 BEHAVIOUR: 'behaviour';
+DECODE: 'decode';
 INSTRUCTION: 'instruction';
 MATCH: 'match';
 DISASM: 'disasm';
@@ -44,13 +45,14 @@ APPEND: 'append';
 WHERE: 'where';
 HELPER: 'helper';
 ZEXCEPTION: 'exception';
+EXPORT: 'export';
 IDENT: LETTER_OR_UNDERSCORE (LETTER_OR_UNDERSCORE|DIGIT)*;
 
 start: arch_ident def*;
 
 arch_ident: ARCH IDENT SEMICOLON;
 
-def: isa_block_def | regspace_def | behaviour_def | helper_def | exception_def;
+def: isa_block_def | regspace_def | decode_def | behaviour_def | helper_def | exception_def;
 
 isa_block_def: ISA name=IDENT LBRACE isa_part* RBRACE SEMICOLON;
 
@@ -107,15 +109,21 @@ disasm_format: text=STRING (TILDE LPAREN IDENT (COMMA IDENT)* RPAREN)?;
 
 disasm_where: WHERE match_expr LBRACE disasm_statement* RBRACE SEMICOLON;
 
-behaviour_part: BEHAVIOUR name=IDENT SEMICOLON;
+decode_def: DECODE LCHEV isa=IDENT DOT type=IDENT RCHEV fnbody SEMICOLON;
 
-behaviour_def: BEHAVIOUR LCHEV isa=IDENT DOT type=IDENT RCHEV name=IDENT fnbody SEMICOLON;
+behaviour_part
+	: BEHAVIOUR name=IDENT SEMICOLON
+	| BEHAVIOUR type_args name=IDENT match_expr SEMICOLON;
+
+behaviour_def: BEHAVIOUR LCHEV isa=IDENT DOT type=IDENT RCHEV name=IDENT ta=type_args? fnbody SEMICOLON;
 
 helper_def: HELPER prototype fnbody SEMICOLON;
 
 exception_def: ZEXCEPTION name=IDENT SEMICOLON;
 
-prototype: rtype=IDENT name=IDENT LPAREN parameter_list? RPAREN attr*;
+prototype: rtype=IDENT name=IDENT ta=type_args? LPAREN parameter_list? RPAREN attr*;
+
+type_args: LCHEV IDENT (COMMA IDENT)* RCHEV;
 
 parameter_list: parameter (COMMA parameter)*;
 
@@ -172,7 +180,7 @@ primary_expression
 	| imm=constant
 	| LPAREN expr=expression RPAREN;
 
-call_expression: fn=IDENT LPAREN argument_list RPAREN;
+call_expression: fn=IDENT type_args? LPAREN argument_list RPAREN;
 
 unary_operator:
     '*'
@@ -193,7 +201,7 @@ postfix_operator
 	| '++'
 	| '--';
   
-declaration: type=IDENT name=IDENT;
+declaration: EXPORT? type=IDENT name=IDENT;
   
 unary_expression
 	: postfix_expression

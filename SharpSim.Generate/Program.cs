@@ -49,17 +49,14 @@ namespace SharpSim.Generate
 				return;
 			}
 
-			foreach (var behaviour in arch.Behaviours) {
-				Console.WriteLine("* Behaviour {0}", behaviour.Name);
-				Console.WriteLine(behaviour.Action);
-				Console.WriteLine();
-			}
+			foreach (var isa in arch.ISAs) {
+				Console.WriteLine($"* ISA {isa.Name}");
 
-			foreach (var helper in arch.Helpers) {
-				Console.WriteLine("* Helper {0}", helper.Name);
-				Console.WriteLine(helper.Action);
+				foreach (var insn in isa.Instructions) {
+					Console.WriteLine("  * Instruction: {0}", insn.Name);
+				}
 			}
-
+				
 			Console.WriteLine("Built Architecture '{0}'", arch.Name);
 		}
 	}

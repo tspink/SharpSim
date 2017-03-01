@@ -12,406 +12,411 @@ namespace SharpSim.Model.AST.Visitor
 	{
 		private int indent;
 
-		public override void VisitArchFile(ArchFile node)
+		public override void VisitArchFile (ArchFile node)
 		{
-			Console.WriteLine("Arch File: {0}", node.Location.Filename);
-			base.VisitArchFile(node);
+			Console.WriteLine ("Arch File: {0}", node.Location.Filename);
+			base.VisitArchFile (node);
 		}
 
-		public override void VisitArchIdentifier(ArchIdentifier node)
+		public override void VisitArchIdentifier (ArchIdentifier node)
 		{
-			Console.WriteLine("Architecture: {0}", node.Identifier);
-			base.VisitArchIdentifier(node);
+			Console.WriteLine ("Architecture: {0}", node.Identifier);
+			base.VisitArchIdentifier (node);
 		}
 
-		public override void VisitRegisterSpace(RegisterSpace regspace)
+		public override void VisitRegisterSpace (RegisterSpace regspace)
 		{
-			Console.WriteLine("Register Space");
-			base.VisitRegisterSpace(regspace);
+			Console.WriteLine ("Register Space");
+			base.VisitRegisterSpace (regspace);
 		}
 
-		public override void VisitRegisterBank(RegisterBank regbank)
+		public override void VisitRegisterBank (RegisterBank regbank)
 		{
-			Console.WriteLine("  Register Bank {0}", regbank.Name);
-			base.VisitRegisterBank(regbank);
+			Console.WriteLine ("  Register Bank {0}", regbank.Name);
+			base.VisitRegisterBank (regbank);
 		}
 
-		public override void VisitRegisterSlot(RegisterSlot regslot)
+		public override void VisitRegisterSlot (RegisterSlot regslot)
 		{
-			Console.WriteLine("  Register Slot {0}", regslot.Name);
-			base.VisitRegisterSlot(regslot);
+			Console.WriteLine ("  Register Slot {0}", regslot.Name);
+			base.VisitRegisterSlot (regslot);
 		}
 
-		public override void VisitVectorRegisterBank(VectorRegisterBank vectorRegBank)
+		public override void VisitVectorRegisterBank (VectorRegisterBank vectorRegBank)
 		{
-			Console.WriteLine("  Vector Register Bank {0}", vectorRegBank.Name);
-			base.VisitVectorRegisterBank(vectorRegBank);
+			Console.WriteLine ("  Vector Register Bank {0}", vectorRegBank.Name);
+			base.VisitVectorRegisterBank (vectorRegBank);
 		}
 
-		public override void VisitFormatDefinition(FormatDefinition formatDef)
+		public override void VisitFormatDefinition (FormatDefinition formatDef)
 		{
-			Console.WriteLine("Format: {0}", formatDef.Name);
+			Console.WriteLine ("Format: {0}", formatDef.Name);
 
-			base.VisitFormatDefinition(formatDef);
+			base.VisitFormatDefinition (formatDef);
 		}
 
-		public override void VisitNamedFormatFieldDefinition(NamedFormatFieldDefinition formatFieldDef)
+		public override void VisitNamedFormatFieldDefinition (NamedFormatFieldDefinition formatFieldDef)
 		{
-			Console.WriteLine("  {0}:{1}", formatFieldDef.Name, formatFieldDef.Width);
-			base.VisitNamedFormatFieldDefinition(formatFieldDef);
+			Console.WriteLine ("  {0}:{1}", formatFieldDef.Name, formatFieldDef.Width);
+			base.VisitNamedFormatFieldDefinition (formatFieldDef);
 		}
 
-		public override void VisitConstrainedFormatFieldDefinition(ConstrainedFormatFieldDefinition formatFieldDef)
+		public override void VisitConstrainedFormatFieldDefinition (ConstrainedFormatFieldDefinition formatFieldDef)
 		{
-			Console.WriteLine("  {0}:{1}", formatFieldDef.Value, formatFieldDef.Width);
-			base.VisitConstrainedFormatFieldDefinition(formatFieldDef);
+			Console.WriteLine ("  {0}:{1}", formatFieldDef.Value, formatFieldDef.Width);
+			base.VisitConstrainedFormatFieldDefinition (formatFieldDef);
 		}
 
-		public override void VisitInstruction(Instruction insn)
+		public override void VisitInstruction (Instruction insn)
 		{
-			Console.WriteLine("Instruction: {0} : {1}", insn.Name, insn.FormatName);
-			base.VisitInstruction(insn);
+			Console.WriteLine ("Instruction: {0} : {1}", insn.Name, insn.FormatName);
+			base.VisitInstruction (insn);
 		}
 
-		public override void VisitInstructionPart(InstructionPart part)
+		public override void VisitInstructionPart (InstructionPart part)
 		{
-			base.VisitInstructionPart(part);
+			base.VisitInstructionPart (part);
 		}
 
-		public override void VisitMatchPart(MatchPart match)
+		public override void VisitMatchPart (MatchPart match)
 		{
-			Console.Write("  Match: ");
-			base.VisitMatchPart(match);
-			Console.WriteLine();
+			Console.Write ("  Match: ");
+			base.VisitMatchPart (match);
+			Console.WriteLine ();
 		}
 
-		public override void VisitBinaryMatchExpression(BinaryMatchExpression expr)
+		public override void VisitBinaryMatchExpression (BinaryMatchExpression expr)
 		{
-			Console.Write("(");
-			expr.LHS.Accept(this);
-			Console.Write(" && ");
-			expr.RHS.Accept(this);
-			Console.Write(")");
+			Console.Write ("(");
+			expr.LHS.Accept (this);
+			Console.Write (" && ");
+			expr.RHS.Accept (this);
+			Console.Write (")");
 		}
 
-		public override void VisitComparisonMatchExpression(ComparisonMatchExpression expr)
+		public override void VisitComparisonMatchExpression (ComparisonMatchExpression expr)
 		{
-			Console.Write("({0} == {1})", expr.InstructionField, expr.Value);
+			Console.Write ("({0} == {1})", expr.InstructionField, expr.Value);
 		}
 
-		public override void VisitDisasmPart(DisasmPart disasm)
+		public override void VisitDisasmPart (DisasmPart disasm)
 		{
-			Console.WriteLine("Disasm:");
-			base.VisitDisasmPart(disasm);
+			Console.WriteLine ("Disasm:");
+			base.VisitDisasmPart (disasm);
 		}
 
-		public override void VisitDisasmAppend(DisasmAppend append)
+		public override void VisitDisasmAppend (DisasmAppend append)
 		{
-			Console.WriteLine("  Append: {0}", append.Format);
-			base.VisitDisasmAppend(append);
+			Console.WriteLine ("  Append: {0}", append.Format);
+			base.VisitDisasmAppend (append);
 		}
 
-		public override void VisitDisasmWhere(DisasmWhere clause)
+		public override void VisitDisasmWhere (DisasmWhere clause)
 		{
-			Console.Write("  Where: ");
-			clause.Constraint.Accept(this);
-			Console.WriteLine(" {");
+			Console.Write ("  Where: ");
+			clause.Constraint.Accept (this);
+			Console.WriteLine (" {");
 
 			foreach (var stmt in clause.Statements) {
-				stmt.Accept(this);
+				stmt.Accept (this);
 			}
-			Console.WriteLine("  }");
+			Console.WriteLine ("  }");
 		}
 
-		public override void VisitBehaviourPart(BehaviourPart behaviour)
+		public override void VisitBehaviourPart (BehaviourPart behaviour)
 		{
-			Console.WriteLine("  Behaviour: {0}", behaviour.Name);
+			Console.Write ("  Behaviour: {0}", behaviour.Name);
+			Console.Write ("<{0}> if ", string.Join (", ", behaviour.InstantiationTypes));
+
+			base.VisitBehaviourPart (behaviour);
+
+			Console.WriteLine ();
 		}
 
-		public override void VisitBehaviour(Behaviour node)
+		public override void VisitBehaviour (Behaviour node)
 		{
-			Console.WriteLine("Behaviour: {0}", node.Name);
+			Console.WriteLine ("Behaviour: {0}", node.Name);
 
 			indent = 0;
-			base.VisitBehaviour(node);
+			base.VisitBehaviour (node);
 		}
 
-		public override void VisitHelper(Helper node)
+		public override void VisitHelper (Helper node)
 		{
-			Console.Write("Helper");
+			Console.Write ("Helper");
 
 			if (node.IsNoInline)
-				Console.Write(" noinline");
+				Console.Write (" noinline");
 
-			Console.Write(": {0} {1}(", node.ReturnType, node.Name);
+			Console.Write (": {0} {1}(", node.ReturnType, node.Name);
 
 			bool first = true;
 			foreach (var parameter in node.Parameters) {
 				if (first)
 					first = false;
 				else
-					Console.Write(", ");
-                
-				parameter.Accept(this);
+					Console.Write (", ");
+
+				parameter.Accept (this);
 			}
 
-			Console.WriteLine(")");
+			Console.WriteLine (")");
 
 			indent = 0;
-			node.Body.Accept(this);
+			node.Body.Accept (this);
 		}
 
-		public override void VisitParameter(Parameter param)
+		public override void VisitParameter (Parameter param)
 		{
-			Console.Write("{0}{1} {2}", param.Type, param.Reference ? "&" : string.Empty, param.Name);
+			Console.Write ("{0}{1} {2}", param.Type, param.Reference ? "&" : string.Empty, param.Name);
 		}
 
-		public override void VisitVariableDeclaration(VariableDeclaration node)
+		public override void VisitVariableDeclaration (VariableDeclaration node)
 		{
-			Console.Write("{0} {1}", node.Type, node.Name);
+			Console.Write ("{0} {1}", node.Type, node.Name);
 			if (node.Assignment != null) {
-				Console.Write(" = ");
-				node.Assignment.Accept(this);
+				Console.Write (" = ");
+				node.Assignment.Accept (this);
 			}
 		}
 
-		public override void VisitAddOperator(AddOperator node)
+		public override void VisitAddOperator (AddOperator node)
 		{
-			node.LHS.Accept(this);
+			node.LHS.Accept (this);
 			switch (node.Type) {
 			case AddOperatorType.Add:
-				Console.Write(" + ");
+				Console.Write (" + ");
 				break;
 			case AddOperatorType.Subtract:
-				Console.Write(" - ");
+				Console.Write (" - ");
 				break;
 			}
-			node.RHS.Accept(this);
+			node.RHS.Accept (this);
 		}
 
-		public override void VisitEqualityOperator(EqualityOperator equalityExpression)
+		public override void VisitEqualityOperator (EqualityOperator equalityExpression)
 		{
-			equalityExpression.LHS.Accept(this);
+			equalityExpression.LHS.Accept (this);
 			switch (equalityExpression.Type) {
 			case EqualityOperatorType.Equal:
-				Console.Write(" == ");
+				Console.Write (" == ");
 				break;
 			case EqualityOperatorType.NotEqual:
-				Console.Write(" != ");
+				Console.Write (" != ");
 				break;
 			}
-			equalityExpression.RHS.Accept(this);
+			equalityExpression.RHS.Accept (this);
 		}
 
-		public override void VisitReadRegisterBank(ReadRegisterBank node)
+		public override void VisitReadRegisterBank (ReadRegisterBank node)
 		{
-			Console.Write("REGS[");
-			node.Bank.Accept(this);
-			Console.Write("][");
-			node.Id.Accept(this);
-			Console.Write("]");
+			Console.Write ("REGS[");
+			node.Bank.Accept (this);
+			Console.Write ("][");
+			node.Id.Accept (this);
+			Console.Write ("]");
 		}
 
-		public override void VisitReadRegister(ReadRegister readRegister)
+		public override void VisitReadRegister (ReadRegister readRegister)
 		{
-			Console.Write("REGS[");
-			readRegister.Id.Accept(this);
-			Console.Write("]");
+			Console.Write ("REGS[");
+			readRegister.Id.Accept (this);
+			Console.Write ("]");
 		}
 
-		public override void VisitFunctionBody(FunctionBody body)
+		public override void VisitFunctionBody (FunctionBody body)
 		{
-			Console.WriteLine("{");
+			Console.WriteLine ("{");
 
 			indent++;
 			foreach (var stmt in body.Statements) {
-				PrintIndent();
+				PrintIndent ();
 
-				stmt.Accept(this);
-            
-				Console.WriteLine();
+				stmt.Accept (this);
+
+				Console.WriteLine ();
 			}
 			indent--;
 
-			PrintIndent();
-			Console.WriteLine("}");
+			PrintIndent ();
+			Console.WriteLine ("}");
 		}
 
-		public override void VisitSymbolExpression(SymbolExpression node)
+		public override void VisitSymbolExpression (SymbolExpression node)
 		{
-			Console.Write("{0}", node.Symbol);
+			Console.Write ("{0}", node.Symbol);
 		}
 
-		public override void VisitStructAccess(StructAccess structAccess)
+		public override void VisitStructAccess (StructAccess structAccess)
 		{
-			structAccess.LHS.Accept(this);
-			Console.Write(".");
-			Console.Write("{0}", structAccess.Member);
+			structAccess.LHS.Accept (this);
+			Console.Write (".");
+			Console.Write ("{0}", structAccess.Member);
 		}
 
-		public override void VisitWriteRegisterBank(WriteRegisterBank writeRegisterBank)
+		public override void VisitWriteRegisterBank (WriteRegisterBank writeRegisterBank)
 		{
-			Console.Write("REGS[");
-			writeRegisterBank.Bank.Accept(this);
-			Console.Write("][");
-			writeRegisterBank.Id.Accept(this);
-			Console.Write("] = ");
-			writeRegisterBank.Value.Accept(this);
+			Console.Write ("REGS[");
+			writeRegisterBank.Bank.Accept (this);
+			Console.Write ("][");
+			writeRegisterBank.Id.Accept (this);
+			Console.Write ("] = ");
+			writeRegisterBank.Value.Accept (this);
 		}
 
-		public override void VisitReadPC(ReadPC readPC)
+		public override void VisitReadPC (ReadPC readPC)
 		{
-			Console.Write("read_pc()");
+			Console.Write ("read_pc()");
 		}
 
-		public override void VisitFunctionCall(FunctionCall call)
+		public override void VisitFunctionCall (FunctionCall call)
 		{
 			bool first = true;
 
-			Console.Write("{0}(", call.Name);
+			Console.Write ("{0}(", call.Name);
 			foreach (var arg in call.Arguments) {
 				if (first)
 					first = false;
 				else
-					Console.Write(", ");
-				arg.Accept(this);
+					Console.Write (", ");
+				arg.Accept (this);
 			}
-			Console.Write(")");
+			Console.Write (")");
 		}
 
-		public override void VisitIntegerConstantExpression(IntegerConstantExpression constExpr)
+		public override void VisitIntegerConstantExpression (IntegerConstantExpression constExpr)
 		{
-			Console.Write("{0}", constExpr.Value);
+			Console.Write ("{0}", constExpr.Value);
 		}
 
-		public override void VisitAssignmentExpression(AssignmentExpression asnExpression)
+		public override void VisitAssignmentExpression (AssignmentExpression asnExpression)
 		{
-			asnExpression.LHS.Accept(this);
-			Console.Write(" = ");
-			asnExpression.RHS.Accept(this);
+			asnExpression.LHS.Accept (this);
+			Console.Write (" = ");
+			asnExpression.RHS.Accept (this);
 		}
 
-		public override void VisitIfStatement(IfStatement ifStatement)
+		public override void VisitIfStatement (IfStatement ifStatement)
 		{
-			Console.Write("if (");
-			ifStatement.Condition.Accept(this);
-			Console.Write(") ");
-			ifStatement.IfTrue.Accept(this);
+			Console.Write ("if (");
+			ifStatement.Condition.Accept (this);
+			Console.Write (") ");
+			ifStatement.IfTrue.Accept (this);
 
 			if (ifStatement.IfFalse != null) {
-				Console.Write(" else ");
-				ifStatement.IfFalse.Accept(this);
+				Console.Write (" else ");
+				ifStatement.IfFalse.Accept (this);
 			}
 		}
 
-		public override void VisitReturn(Return ret)
+		public override void VisitReturn (Return ret)
 		{
-			Console.Write("return ");
-			ret.Value?.Accept(this);
+			Console.Write ("return ");
+			ret.Value?.Accept (this);
 		}
 
-		public override void VisitBreak(Break brk)
+		public override void VisitBreak (Break brk)
 		{
-			Console.Write("break");
+			Console.Write ("break");
 		}
 
-		public override void VisitRaise(Raise raise)
+		public override void VisitRaise (Raise raise)
 		{
-			Console.Write("raise {0}", raise.Value);
+			Console.Write ("raise {0}", raise.Value);
 		}
 
-		public override void VisitSwitch(SwitchStatement switchStatement)
+		public override void VisitSwitch (SwitchStatement switchStatement)
 		{
-			Console.Write("switch (");
-			switchStatement.Value.Accept(this);
-			Console.Write(") {");
+			Console.Write ("switch (");
+			switchStatement.Value.Accept (this);
+			Console.Write (") {");
 
 			foreach (var switchCase in switchStatement.Cases) {
-				Console.Write("case ");
-				switchCase.Item1.Accept(this);
-				Console.Write(":");
-				switchCase.Item2.Accept(this);
+				Console.Write ("case ");
+				switchCase.Item1.Accept (this);
+				Console.Write (":");
+				switchCase.Item2.Accept (this);
 			}
 
-			Console.WriteLine("}");
+			Console.WriteLine ("}");
 		}
 
-		public override void VisitTernaryOperator(TernaryOperator ternary)
+		public override void VisitTernaryOperator (TernaryOperator ternary)
 		{
-			ternary.Condition.Accept(this);
-			Console.Write(" ? ");
-			ternary.TrueExpression.Accept(this);
-			Console.Write(" : ");
-			ternary.FalseExpression.Accept(this);
+			ternary.Condition.Accept (this);
+			Console.Write (" ? ");
+			ternary.TrueExpression.Accept (this);
+			Console.Write (" : ");
+			ternary.FalseExpression.Accept (this);
 		}
 
-		public override void VisitBitwiseOperator(BitwiseOperator bitop)
+		public override void VisitBitwiseOperator (BitwiseOperator bitop)
 		{
-			bitop.LHS.Accept(this);
+			bitop.LHS.Accept (this);
 			switch (bitop.Type) {
 			case BitwiseOperatorType.And:
-				Console.Write(" & ");
+				Console.Write (" & ");
 				break;
 			case BitwiseOperatorType.Or:
-				Console.Write(" | ");
+				Console.Write (" | ");
 				break;
 			case BitwiseOperatorType.Xor:
-				Console.Write(" ^ ");
+				Console.Write (" ^ ");
 				break;
 			}
-			bitop.RHS.Accept(this);
+			bitop.RHS.Accept (this);
 		}
 
-		public override void VisitShiftOperator(ShiftOperator shop)
+		public override void VisitShiftOperator (ShiftOperator shop)
 		{
-			shop.LHS.Accept(this);
+			shop.LHS.Accept (this);
 			switch (shop.Type) {
 			case ShiftOperatorType.RotateLeft:
-				Console.Write(" <<< ");
+				Console.Write (" <<< ");
 				break;
 			case ShiftOperatorType.RotateRight:
-				Console.Write(" >>> ");
+				Console.Write (" >>> ");
 				break;
 			case ShiftOperatorType.ShiftLeft:
-				Console.Write(" << ");
+				Console.Write (" << ");
 				break;
 			case ShiftOperatorType.ShiftRight:
-				Console.Write(" >> ");
+				Console.Write (" >> ");
 				break;
 			}
-			shop.RHS.Accept(this);
+			shop.RHS.Accept (this);
 		}
 
-		public override void VisitComparisonOperator(ComparisonOperator comop)
+		public override void VisitComparisonOperator (ComparisonOperator comop)
 		{
-			comop.LHS.Accept(this);
+			comop.LHS.Accept (this);
 			switch (comop.Type) {
 			case ComparisonOperatorType.GreaterThan:
-				Console.Write(" > ");
+				Console.Write (" > ");
 				break;
 			case ComparisonOperatorType.GreaterThanOrEqual:
-				Console.Write(" >= ");
+				Console.Write (" >= ");
 				break;
 			case ComparisonOperatorType.LessThan:
-				Console.Write(" < ");
+				Console.Write (" < ");
 				break;
 			case ComparisonOperatorType.LessThanOrEqual:
-				Console.Write(" <= ");
+				Console.Write (" <= ");
 				break;
 			}
-			comop.RHS.Accept(this);
+			comop.RHS.Accept (this);
 		}
 
-		public override void VisitCastOperator(CastOperator castop)
+		public override void VisitCastOperator (CastOperator castop)
 		{
-			Console.Write("({0})", castop.Type);
-			castop.Expression.Accept(this);
+			Console.Write ("({0})", castop.Type);
+			castop.Expression.Accept (this);
 		}
 
-		private void PrintIndent()
+		private void PrintIndent ()
 		{
 			for (int i = 0; i < indent; i++) {
-				Console.Write("  ");
+				Console.Write ("  ");
 			}
 		}
 	}

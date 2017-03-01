@@ -5,11 +5,15 @@
 // All Rights Reserved
 //
 using System;
+using System.Collections.Generic;
 
 namespace SharpSim.Model.SSA
 {
 	public abstract class SSAType
 	{
+		private static bool typesInitialised = false;
+		private static Dictionary<string, SSAType> primitiveTypeMapping = new Dictionary<string, SSAType>();
+
 		public static readonly SSAType None = new NoneType();
 
 		private class NoneType:SSAType
@@ -23,45 +27,63 @@ namespace SharpSim.Model.SSA
 		{
 		}
 
-		public static SSAType FromString(string s, bool refType)
+		private static void InitialisePrimitiveTypes()
 		{
-			if (!refType)
-				return FromString(s);
-			else
-				return FromString(s).CreateReferenceType();
+			if (typesInitialised)
+				return;
+
+			typesInitialised = true;
+
+			primitiveTypeMapping.Add("void", PrimitiveType.Void);
+			primitiveTypeMapping.Add("bool", PrimitiveType.Boolean);
+
+			primitiveTypeMapping.Add("u8", PrimitiveType.UInt8);
+			primitiveTypeMapping.Add("u16", PrimitiveType.UInt16);
+			primitiveTypeMapping.Add("u32", PrimitiveType.UInt32);
+			primitiveTypeMapping.Add("u64", PrimitiveType.UInt64);
+
+			primitiveTypeMapping.Add("s8", PrimitiveType.SInt8);
+			primitiveTypeMapping.Add("s16", PrimitiveType.SInt16);
+			primitiveTypeMapping.Add("s32", PrimitiveType.SInt32);
+			primitiveTypeMapping.Add("s64", PrimitiveType.SInt64);
+
+			primitiveTypeMapping.Add("single", PrimitiveType.Single);
+			primitiveTypeMapping.Add("float", PrimitiveType.Double);
+			primitiveTypeMapping.Add("double", PrimitiveType.Double);
 		}
 
-		public static SSAType FromString(string s)
+		public static SSAType FromString(SSAAction action, string s, bool refType)
 		{
-			switch (s) {
-			case "void":
-				return PrimitiveType.Void;
-			case "bool":
-				return PrimitiveType.Boolean;
-			case "u8":
-				return PrimitiveType.UInt8;
-			case "u16":
-				return PrimitiveType.UInt16;
-			case "u32":
-				return PrimitiveType.UInt32;
-			case "u64":
-				return PrimitiveType.UInt64;
-			case "s8":
-				return PrimitiveType.SInt8;
-			case "s16":
-				return PrimitiveType.SInt16;
-			case "s32":
-				return PrimitiveType.SInt32;
-			case "s64":
-				return PrimitiveType.SInt64;
-			case "single":
-			case "float":
-				return PrimitiveType.Single;
-			case "double":
-				return PrimitiveType.Double;
+			if (!refType)
+				return FromString(action, s);
+			else
+				return FromString(action, s).CreateReferenceType();
+		}
+
+		public static bool TryFromString(SSAAction action, string s, out SSAType type)
+		{
+			InitialisePrimitiveTypes();
+
+			if (primitiveTypeMapping.TryGetValue(s, out type))
+				return true;
+
+			if (action != null) {
+				type = action.GetNamedTypeParameter(s);
+				if (type != null)
+					return true;
 			}
 
-			throw new Exception(string.Format("Unrecognised type '{0}'", s));
+			type = null;
+			return false;
+		}
+
+		public static SSAType FromString(SSAAction action, string s)
+		{
+			SSAType type;
+			if (!TryFromString(action, s, out type))
+				throw new Exceptions.UnrecognisedTypeException(s);
+
+			return type;
 		}
 
 		public ReferenceType CreateReferenceType()
@@ -169,6 +191,21 @@ namespace SharpSim.Model.SSA
 		public override string ToString()
 		{
 			return string.Format("[ExceptionType]");
+		}
+	}
+
+	public class SSATypeParameter : SSAType
+	{
+		public SSATypeParameter(string name)
+		{
+			this.Name = name;
+		}
+
+		public string Name{ get; private set; }
+
+		public override string ToString()
+		{
+			return this.Name;
 		}
 	}
 }

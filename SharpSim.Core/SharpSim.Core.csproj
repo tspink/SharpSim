@@ -128,6 +128,14 @@
     <Compile Include="Model\AST\ExceptionDeclaration.cs" />
     <Compile Include="Model\ArchException.cs" />
     <Compile Include="Model\SSA\ReturnStatement.cs" />
+    <Compile Include="Model\SSA\Exceptions\UnrecognisedTypeException.cs" />
+    <Compile Include="Model\AST\Decode.cs" />
+    <Compile Include="Model\InstructionBehaviourInstantiation.cs" />
+    <Compile Include="Model\AST\Action.cs" />
+    <Compile Include="Model\SSA\CastStatement.cs" />
+    <Compile Include="Model\SSA\Optimiser\OptimisationPass.cs" />
+    <Compile Include="Model\SSA\Optimiser\SSAOptimiser.cs" />
+    <Compile Include="Model\SSA\Optimiser\InliningPass.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -137,5 +145,6 @@
     <Folder Include="Model\SSA\" />
     <Folder Include="Diagnostics\" />
     <Folder Include="Model\SSA\Exceptions\" />
+    <Folder Include="Model\SSA\Optimiser\" />
   </ItemGroup>
 </Project>

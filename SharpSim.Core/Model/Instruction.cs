@@ -5,12 +5,24 @@
 // All Rights Reserved
 //
 using System;
+using System.Collections.Generic;
 
 namespace SharpSim.Model
 {
 	public class Instruction
 	{
-		public Instruction(string name, InstructionFormat format, Behaviour behaviour)
+		public class DecodeMatch
+		{
+		}
+
+		public Instruction(string name, InstructionFormat format, IEnumerable<InstructionBehaviourInstantiation> behaviours)
+		{
+			this.Name = name;
+		}
+
+		public string Name{ get; private set; }
+
+		public void AddDecodeMatch(DecodeMatch match)
 		{
 		}
 	}

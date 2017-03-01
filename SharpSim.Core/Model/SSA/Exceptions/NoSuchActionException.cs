@@ -8,11 +8,12 @@ using System;
 
 namespace SharpSim.Model.SSA.Exceptions
 {
-    public class NoSuchActionException : SSAException
-    {
-        public NoSuchActionException(string action) : base(string.Format("Action '{0}' does not exist", action))
-        {
-        }
-    }
+	public class NoSuchActionException : SSAException
+	{
+		public NoSuchActionException(SSAActionPrototype prototype)
+			: base(string.Format("Action '{0}' does not exist", prototype))
+		{
+		}
+	}
 }
 

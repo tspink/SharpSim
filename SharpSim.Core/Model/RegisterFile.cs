@@ -145,7 +145,7 @@ namespace SharpSim.Model
 
 		public void AddRegisterBank(string name, string type, int count, int width, int stride, int offset)
 		{
-			var bank = new RegisterBank(name, SSA.SSAType.FromString(type), offset, count, width, stride);
+			var bank = new RegisterBank(name, SSA.SSAType.FromString(null, type), offset, count, width, stride);
 			this.registerDefinitions.Add(bank);
 		}
 
@@ -171,13 +171,13 @@ namespace SharpSim.Model
 
 		public void AddVectorRegisterBank(string name, string type, int arity, int count, int width, int stride, int offset)
 		{
-			var vrb = new VectorRegisterBank(name, SSA.SSAType.FromString(type), offset, arity, count, width, stride);
+			var vrb = new VectorRegisterBank(name, SSA.SSAType.FromString(null, type), offset, arity, count, width, stride);
 			this.registerDefinitions.Add(vrb);
 		}
 
 		public void AddRegister(string name, string type, string tag, int width, int offset)
 		{
-			var reg = new Register(name, SSA.SSAType.FromString(type), offset, width);
+			var reg = new Register(name, SSA.SSAType.FromString(null, type), offset, width);
 			this.registerDefinitions.Add(reg);
 		}
 	}

@@ -66,6 +66,8 @@ namespace SharpSim.Model.AST
 
 	public class BehaviourPart:InstructionPart
 	{
+		private List<string> instantiationTypes = new List<string>();
+
 		public BehaviourPart(ASTNode.ASTNodeLocation location, string name)
 			: base(location)
 		{
@@ -75,7 +77,22 @@ namespace SharpSim.Model.AST
 			this.Name = name;
 		}
 
+		public BehaviourPart(ASTNode.ASTNodeLocation location, string name, IEnumerable<string> instantiationTypes, MatchExpression match)
+			: base(location)
+		{
+			if (string.IsNullOrEmpty(name))
+				throw new ArgumentNullException(nameof(name));
+
+			this.Name = name;
+			this.instantiationTypes.AddRange(instantiationTypes);
+			this.InstantiationMatch = match;
+		}
+
 		public string Name{ get; private set; }
+
+		public IEnumerable<string> InstantiationTypes{ get { return this.instantiationTypes.AsReadOnly(); } }
+
+		public MatchExpression InstantiationMatch{ get; private set; }
 
 		public override void Accept(SharpSim.Model.AST.Visitor.IASTVisitor visitor)
 		{

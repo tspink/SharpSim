@@ -8,11 +8,12 @@ using System;
 
 namespace SharpSim.Model.SSA.Exceptions
 {
-    public class DuplicateActionException : SSAException
-    {
-        public DuplicateActionException(string action) : base(string.Format("The action '{0}' already exists", action))
-        {
-        }
-    }
+	public class DuplicateActionException : SSAException
+	{
+		public DuplicateActionException(SSAActionPrototype prototype)
+			: base(string.Format("The action '{0}' already exists", prototype))
+		{
+		}
+	}
 }
 

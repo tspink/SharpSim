@@ -10,49 +10,47 @@ using System.Linq;
 
 namespace SharpSim.Model.SSA
 {
-    public class CallStatement : SSAStatement
-    {
-        private List<SSAOperand> arguments = new List<SSAOperand>();
+	public class CallStatement : SSAStatement
+	{
+		private List<SSAOperand> arguments = new List<SSAOperand> ();
 
-        public CallStatement(ActionOperand action)
-        {
-            this.Action = action;
-        }
+		public CallStatement (ActionOperand action)
+		{
+			this.Action = action;
+		}
 
-        public ActionOperand Action{ get; private set; }
+		public ActionOperand Action { get; private set; }
 
-        public override Fixedness Fixed
-        {
-            get {
-                return this.arguments.All(a => a.Fixed == Fixedness.AlwaysFixed) ? Fixedness.AlwaysFixed : Fixedness.Dynamic;
-            }
-        }
+		public override Fixedness Fixed {
+			get {
+				return this.arguments.All (a => a.Fixed == Fixedness.AlwaysFixed) && this.Action.Value.Prototype.ReturnType == PrimitiveType.Void ? Fixedness.AlwaysFixed : Fixedness.Dynamic;
+			}
+		}
 
-        public override SSAType Type
-        {
-            get {
-                return this.Action.Value.Prototype.ReturnType;
-            }
-        }
+		public override SSAType Type {
+			get {
+				return this.Action.Value.Prototype.ReturnType;
+			}
+		}
 
-        public void AddArgument(SSAOperand arg)
-        {
-            this.arguments.Add(arg);
-        }
+		public void AddArgument (SSAOperand arg)
+		{
+			this.arguments.Add (arg);
+		}
 
-        public override string ToString()
-        {
-            var builder = new System.Text.StringBuilder();
+		public override string ToString ()
+		{
+			var builder = new System.Text.StringBuilder ();
 
-            builder.AppendFormat("call {0}", this.Action);
+			builder.AppendFormat ("call {0}", this.Action);
 
-            if (this.arguments.Count > 0) {
-                builder.Append(", ");
-                builder.Append(string.Join(", ", this.arguments.Select(a => a.ToString())));
-            }
+			if (this.arguments.Count > 0) {
+				builder.Append (", ");
+				builder.Append (string.Join (", ", this.arguments.Select (a => a.ToString ())));
+			}
 
-            return builder.ToString();
-        }
-    }
+			return builder.ToString ();
+		}
+	}
 }
 

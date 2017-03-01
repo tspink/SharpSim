@@ -10,7 +10,7 @@ namespace SharpSim.Model.SSA
 {
 	public class StoreValueStatement : SSAStatement
 	{
-		public StoreValueStatement(SSAOperand value, SymbolOperand symbol)
+		public StoreValueStatement (SSAOperand value, SymbolOperand symbol)
 		{
 			this.Value = value;
 			this.Symbol = symbol;
@@ -18,7 +18,7 @@ namespace SharpSim.Model.SSA
 
 		public SymbolOperand Symbol { get; private set; }
 
-		public SSAOperand Value{ get; private set; }
+		public SSAOperand Value { get; private set; }
 
 		public override Fixedness Fixed {
 			get {
@@ -34,9 +34,9 @@ namespace SharpSim.Model.SSA
 			}
 		}
 
-		public override string ToString()
+		public override string ToString ()
 		{
-			return string.Format("stv {0}, {1}", this.Value, this.Symbol);
+			return string.Format ("stv {0}, {1}", this.Value, this.Symbol);
 		}
 	}
 }

@@ -178,7 +178,7 @@ namespace SharpSim.Model.SSA
 
 		public override string ToString()
 		{
-			return string.Format("@{0}", this.Value.Name);
+			return string.Format("@{0}", this.Value.Prototype);
 		}
 	}
 
