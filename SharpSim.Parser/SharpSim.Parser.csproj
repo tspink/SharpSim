@@ -29,8 +29,8 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
-    <Reference Include="Antlr4.Runtime">
-      <HintPath>..\..\..\Downloads\antlr4\Antlr4.Runtime.dll</HintPath>
+    <Reference Include="Antlr4.Runtime.Standard">
+      <HintPath>..\packages\Antlr4.Runtime.Standard.4.6.0\lib\net35\Antlr4.Runtime.Standard.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -56,5 +56,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Grammar\ArchFile.g" />
+    <None Include="packages.config" />
   </ItemGroup>
 </Project>

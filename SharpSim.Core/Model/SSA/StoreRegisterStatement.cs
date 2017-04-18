@@ -10,13 +10,13 @@ namespace SharpSim.Model.SSA
 {
 	public class StoreRegisterStatement : RegisterAccessStatement
 	{
-		public StoreRegisterStatement(SSAOperand value, SSAOperand fileOffset, SSAType registerType)
-			: base(fileOffset, registerType)
+		public StoreRegisterStatement (SSAOperand value, SSAOperand fileOffset, SSAType registerType)
+			: base (fileOffset, registerType)
 		{
 			this.Value = value;
 		}
 
-		public SSAOperand Value{ get; private set; }
+		public SSAOperand Value { get; private set; }
 
 		public override SSAType Type {
 			get {
@@ -24,9 +24,14 @@ namespace SharpSim.Model.SSA
 			}
 		}
 
-		public override string ToString()
+		public override SSAStatement Clone ()
 		{
-			return string.Format("str {0}, {1}", this.Value, this.FileOffset);
+			return new StoreRegisterStatement (this.Value.Clone (), this.FileOffset.Clone (), this.RegisterType);
+		}
+
+		public override string ToString ()
+		{
+			return string.Format ("str {0}, {1}", this.Value, this.FileOffset);
 		}
 	}
 }

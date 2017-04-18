@@ -20,8 +20,8 @@ namespace SharpSim.Model.SSA
 			GreaterThanOrEqual
 		}
 
-		public ComparisonStatement(TypedSSAOperand lhs, TypedSSAOperand rhs, ComparisonKind kind)
-			: base(lhs, rhs)
+		public ComparisonStatement (TypedSSAOperand lhs, TypedSSAOperand rhs, ComparisonKind kind)
+			: base (lhs, rhs)
 		{
 			this.Kind = kind;
 		}
@@ -34,39 +34,46 @@ namespace SharpSim.Model.SSA
 			}
 		}
 
-		public override string ToString()
+		public override SSAStatement Clone ()
 		{
-			var builder = new System.Text.StringBuilder();
-			builder.Append("cmp");
+			return new ComparisonStatement (
+				this.LHS.Clone () as TypedSSAOperand,
+				this.RHS.Clone () as TypedSSAOperand,
+				this.Kind);
+		}
+
+		public override string ToString ()
+		{
+			var builder = new System.Text.StringBuilder ();
+			builder.Append ("cmp");
 
 			switch (this.Kind) {
 			case ComparisonKind.Equal:
-				builder.Append("eq");
+				builder.Append ("eq");
 				break;
 			case ComparisonKind.NotEqual:
-				builder.Append("ne");
+				builder.Append ("ne");
 				break;
 			case ComparisonKind.GreaterThan:
-				builder.Append("gt");
+				builder.Append ("gt");
 				break;
 			case ComparisonKind.GreaterThanOrEqual:
-				builder.Append("ge");
+				builder.Append ("ge");
 				break;
 			case ComparisonKind.LessThan:
-				builder.Append("lt");
+				builder.Append ("lt");
 				break;
 			case ComparisonKind.LessThanOrEqual:
-				builder.Append("le");
+				builder.Append ("le");
 				break;
 			default:
-				builder.Append("?");
+				builder.Append ("?");
 				break;
 			}
 
-			builder.AppendFormat(" {0}, {1}", this.LHS, this.RHS);
+			builder.AppendFormat (" {0}, {1}", this.LHS, this.RHS);
 
-			return builder.ToString();
+			return builder.ToString ();
 		}
 	}
 }
-    

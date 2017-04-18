@@ -39,6 +39,7 @@ SLOT: 'slot';
 BEHAVIOUR: 'behaviour';
 DECODE: 'decode';
 INSTRUCTION: 'instruction';
+DEFAULT: 'default';
 MATCH: 'match';
 DISASM: 'disasm';
 APPEND: 'append';
@@ -56,7 +57,7 @@ def: isa_block_def | regspace_def | decode_def | behaviour_def | helper_def | ex
 
 isa_block_def: ISA name=IDENT LBRACE isa_part* RBRACE SEMICOLON;
 
-isa_part: insn_def | format_def;
+isa_part: insn_def | format_def | default_def;
 
 format_def: FORMAT name=IDENT LBRACE format_field_def* RBRACE SEMICOLON;
 
@@ -86,6 +87,8 @@ reg_slot_def: SLOT name=IDENT LPAREN
 	width=constant_number COMMA
 	offset=constant_number RPAREN
 	tag=IDENT? SEMICOLON;
+
+default_def: DEFAULT LBRACE insn_part* RBRACE SEMICOLON;
 
 insn_def: INSTRUCTION LCHEV format=IDENT RCHEV name=IDENT LBRACE insn_part* RBRACE SEMICOLON;
 

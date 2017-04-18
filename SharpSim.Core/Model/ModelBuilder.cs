@@ -207,12 +207,9 @@ namespace SharpSim.Model
 				}
 			}
 
+			Console.WriteLine ("BEFORE OPTIMISATION");
 			foreach (var action in context.Actions) {
 				if (!action.External) {
-					if (!action.HasEntryBlock) {
-						//
-					}
-
 					Console.WriteLine (action);
 				}
 			}
@@ -223,6 +220,14 @@ namespace SharpSim.Model
 					optimiser.OptimiseAction (action);
 				}
 			}
+
+			Console.WriteLine ("AFTER OPTIMISATION");
+			foreach (var action in context.Actions) {
+				if (!action.External) {
+					Console.WriteLine (action);
+				}
+			}
+
 
 			return !this.diag.HasErrors;
 		}

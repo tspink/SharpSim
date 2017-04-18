@@ -9,37 +9,29 @@ using System.Collections.Generic;
 
 namespace SharpSim.Model.AST
 {
-	public class Instruction : ASTNode
+	public class Instruction : InstructionBase
 	{
-		private List<InstructionPart> parts = new List<InstructionPart>();
 
-		public Instruction(ASTNode.ASTNodeLocation location, string name, string format)
-			: base(location)
+		public Instruction (ASTNode.ASTNodeLocation location, string name, string format)
+			: base (location)
 		{
-			if (string.IsNullOrEmpty(name))
-				throw new ArgumentNullException(nameof(name));
+			if (string.IsNullOrEmpty (name))
+				throw new ArgumentNullException (nameof (name));
 
-			if (string.IsNullOrEmpty(format))
-				throw new ArgumentNullException(nameof(format));
+			if (string.IsNullOrEmpty (format))
+				throw new ArgumentNullException (nameof (format));
 
 			this.Name = name;
 			this.FormatName = format;
 		}
 
-		public string Name{ get; private set; }
+		public string Name { get; private set; }
 
-		public string FormatName{ get; private set; }
+		public string FormatName { get; private set; }
 
-		public void AddPart(InstructionPart part)
+		public override void Accept (SharpSim.Model.AST.Visitor.IASTVisitor visitor)
 		{
-			parts.Add(part);
-		}
-
-		public IEnumerable<InstructionPart> Parts{ get { return this.parts.AsReadOnly(); } }
-
-		public override void Accept(SharpSim.Model.AST.Visitor.IASTVisitor visitor)
-		{
-			visitor.VisitInstruction(this);
+			visitor.VisitInstruction (this);
 		}
 	}
 }

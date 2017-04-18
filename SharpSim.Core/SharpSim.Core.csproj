@@ -136,6 +136,8 @@
     <Compile Include="Model\SSA\Optimiser\OptimisationPass.cs" />
     <Compile Include="Model\SSA\Optimiser\SSAOptimiser.cs" />
     <Compile Include="Model\SSA\Optimiser\InliningPass.cs" />
+    <Compile Include="Model\AST\InstructionBase.cs" />
+    <Compile Include="Model\AST\DefaultInstruction.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

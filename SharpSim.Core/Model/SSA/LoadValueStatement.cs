@@ -8,33 +8,36 @@ using System;
 
 namespace SharpSim.Model.SSA
 {
-    public class LoadValueStatement : SSAStatement
-    {
-        public LoadValueStatement(SymbolOperand symbol)
-        {
-            this.Symbol = symbol;
-        }
+	public class LoadValueStatement : SSAStatement
+	{
+		public LoadValueStatement (SymbolOperand symbol)
+		{
+			this.Symbol = symbol;
+		}
 
-        public SymbolOperand Symbol{ get; private set; }
+		public SymbolOperand Symbol { get; private set; }
 
-        public override Fixedness Fixed
-        {
-            get {
-                return this.Symbol.Fixed;
-            }
-        }
+		public override Fixedness Fixed {
+			get {
+				return this.Symbol.Fixed;
+			}
+		}
 
-        public override SSAType Type
-        {
-            get {
-                return this.Symbol.Value.Type;
-            }
-        }
+		public override SSAType Type {
+			get {
+				return this.Symbol.Value.Type;
+			}
+		}
 
-        public override string ToString()
-        {
-            return string.Format("ldv {0}", this.Symbol);
-        }
-    }
+		public override SSAStatement Clone ()
+		{
+			return new LoadValueStatement (this.Symbol.Clone () as SymbolOperand);
+		}
+
+		public override string ToString ()
+		{
+			return string.Format ("ldv {0}", this.Symbol);
+		}
+	}
 }
 

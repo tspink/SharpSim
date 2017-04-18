@@ -8,33 +8,36 @@ using System;
 
 namespace SharpSim.Model.SSA
 {
-    public class JumpStatement : ControlFlowStatement
-    {
-        public JumpStatement(BlockOperand target)
-        {
-            this.Target = target;
-        }
+	public class JumpStatement : ControlFlowStatement
+	{
+		public JumpStatement (BlockOperand target)
+		{
+			this.Target = target;
+		}
 
-        public BlockOperand Target{ get; set; }
+		public BlockOperand Target { get; set; }
 
-        public override Fixedness Fixed
-        {
-            get {
-                return this.Target.Fixed;
-            }
-        }
+		public override Fixedness Fixed {
+			get {
+				return this.Target.Fixed;
+			}
+		}
 
-        public override System.Collections.Generic.IEnumerable<SSABlock> TargetBlocks
-        {
-            get {
-                return new SSABlock[]{ this.Target.Value };
-            }
-        }
+		public override System.Collections.Generic.IEnumerable<SSABlock> TargetBlocks {
+			get {
+				return new SSABlock [] { this.Target.Value };
+			}
+		}
 
-        public override string ToString()
-        {
-            return string.Format("jmp {0}", this.Target);
-        }
-    }
+		public override SSAStatement Clone ()
+		{
+			return new JumpStatement (this.Target.Clone () as BlockOperand);
+		}
+
+		public override string ToString ()
+		{
+			return string.Format ("jmp {0}", this.Target);
+		}
+	}
 }
 

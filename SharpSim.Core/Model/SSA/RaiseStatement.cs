@@ -10,15 +10,15 @@ namespace SharpSim.Model.SSA
 {
 	public class RaiseStatement : ControlFlowStatement
 	{
-		public RaiseStatement(SymbolOperand exceptionType)
+		public RaiseStatement (SymbolOperand exceptionType)
 		{
 			if (exceptionType == null)
-				throw new ArgumentNullException(nameof(exceptionType));
-			
+				throw new ArgumentNullException (nameof (exceptionType));
+
 			this.ExceptionType = exceptionType;
 		}
 
-		public SymbolOperand ExceptionType{ get; private set; }
+		public SymbolOperand ExceptionType { get; private set; }
 
 		public override Fixedness Fixed {
 			get {
@@ -28,13 +28,18 @@ namespace SharpSim.Model.SSA
 
 		public override System.Collections.Generic.IEnumerable<SSABlock> TargetBlocks {
 			get {
-				return new SSABlock[0];
+				return new SSABlock [0];
 			}
 		}
 
-		public override string ToString()
+		public override SSAStatement Clone ()
 		{
-			return string.Format("raise {0}", this.ExceptionType);
+			return new RaiseStatement (this.ExceptionType.Clone () as SymbolOperand);
+		}
+
+		public override string ToString ()
+		{
+			return string.Format ("raise {0}", this.ExceptionType);
 		}
 	}
 }

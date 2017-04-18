@@ -38,6 +38,17 @@ namespace SharpSim.Model.SSA
 			this.arguments.Add (arg);
 		}
 
+		public override SSAStatement Clone ()
+		{
+			var newStatement = new CallStatement (this.Action.Clone () as ActionOperand);
+
+			foreach (var argument in this.arguments) {
+				newStatement.AddArgument (argument.Clone ());
+			}
+
+			return newStatement;
+		}
+
 		public override string ToString ()
 		{
 			var builder = new System.Text.StringBuilder ();

@@ -31,15 +31,55 @@ namespace SharpSim.Model.SSA.Optimiser
 
 				foreach (var stmt in current.Statements) {
 					if (stmt is SSA.CallStatement) {
-						if (((SSA.CallStatement)stmt).Action.Value.External) continue;
+						var callStatement = (SSA.CallStatement)stmt;
 
-						Console.WriteLine ("Inlining Call: {0}", stmt);
+						// Can't inline external calls (obviously)
+						if (callStatement.Action.Value.External) continue;
+
+						if (InlineCall (callStatement, blockStack)) {
+							break;
+						}
 					}
 				}
 
 				foreach (var targetBlock in current.TargetBlocks) {
 					blockStack.Push (targetBlock);
 				}
+			}
+
+			return true;
+		}
+
+		private bool InlineCall (SSA.CallStatement stmt, Stack<SSABlock> blockStack)
+		{
+			Console.WriteLine ("Inlining Call: {0}", stmt);
+
+			// Split the block
+			var bottom = stmt.Owner.Split (stmt);
+
+			// Inline target action into top of bottom.
+			var target = stmt.Action.Value;
+
+			if (!target.HasEntryBlock)
+				throw new Exception ("WHAT!?");
+
+			var blockQueue = new Queue<SSABlock> ();
+			blockQueue.Enqueue (target.EntryBlock);
+
+			while (blockQueue.Count > 0) {
+				var targetBlock = blockQueue.Dequeue ();
+
+				foreach (var targetSuccessor in targetBlock.TargetBlocks) {
+					blockQueue.Enqueue (targetSuccessor);
+				}
+
+				var newBlock = targetBlock.Clone (stmt.Owner.Owner);
+
+				if (targetBlock == target.EntryBlock) {
+					stmt.Owner.Last.Remove ();
+					stmt.Owner.AddStatement (new JumpStatement (newBlock.AsOperand ()));
+				}
+
 			}
 
 			return true;

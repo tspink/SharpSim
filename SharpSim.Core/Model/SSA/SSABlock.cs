@@ -14,7 +14,6 @@ namespace SharpSim.Model.SSA
 	public class SSABlock
 	{
 		private List<SSAStatement> statements = new List<SSAStatement> ();
-		private bool hasControlFlowStatement = false;
 
 		public SSABlock (SSAAction owner)
 		{
@@ -39,16 +38,30 @@ namespace SharpSim.Model.SSA
 			if (statement.Owner != null)
 				throw new Exception ("Statement already has an owner");
 
-			if (hasControlFlowStatement)
+			if (this.HasControlFlowStatement)
 				throw new InvalidOperationException ("Block contains control-flow statement");
 
 			statement.Index = this.Owner.GetUniqueStatementIndex ();
 			statement.Owner = this;
 
 			statements.Add (statement);
+		}
 
-			if (statement is ControlFlowStatement)
-				hasControlFlowStatement = true;
+		public void RemoveStatement (SSAStatement statement)
+		{
+			if (statement == null)
+				throw new ArgumentNullException (nameof (statement));
+
+			if (statement.Owner != this)
+				throw new Exception ("Statement not owned by this block");
+
+			statements.Remove (statement);
+		}
+
+		public bool HasControlFlowStatement {
+			get {
+				return this.Last is ControlFlowStatement;
+			}
 		}
 
 		public SSAStatement this [int index] {
@@ -56,7 +69,6 @@ namespace SharpSim.Model.SSA
 				return statements [index];
 			}
 		}
-
 
 		public IEnumerable<SSAStatement> Statements {
 			get {
@@ -74,6 +86,53 @@ namespace SharpSim.Model.SSA
 				else
 					return new SSABlock [0];
 			}
+		}
+
+		public SSABlock Clone (SSAAction targetAction)
+		{
+			var block = targetAction.CreateBlock ();
+
+			foreach (var stmt in statements) {
+				block.AddStatement (stmt.Clone ());
+			}
+
+			return block;
+		}
+
+		public SSABlock Split (SSAStatement stmt)
+		{
+			if (stmt.Owner != this)
+				throw new InvalidOperationException ("Statement not owned by this block");
+
+			SSABlock bottom = this.Owner.CreateBlock ();
+
+			var removeList = new List<SSAStatement> ();
+
+			bool moving = false;
+			for (int i = 0; i < this.statements.Count; i++) {
+				var childStmt = this.statements [i];
+
+				if (moving) {
+					removeList.Add (childStmt);
+
+					childStmt.Owner = null;
+					bottom.AddStatement (childStmt);
+				} else {
+
+					if (childStmt == stmt) {
+						moving = true;
+						removeList.Add (childStmt);
+					}
+				}
+			}
+
+			foreach (var s in removeList) {
+				this.statements.Remove (s);
+			}
+
+			this.AddStatement (new SSA.JumpStatement (bottom.AsOperand ()));
+
+			return bottom;
 		}
 
 		public override string ToString ()

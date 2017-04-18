@@ -30,6 +30,8 @@ isa a64 {
 		rn:5;
 		rd:5;
 	};
+
+	format INVALID { };
 };
 
 isa a64 {
@@ -46,13 +48,18 @@ isa a64 {
 		behaviour<u32> sub (sf == 0);
 		behaviour<u64> sub (sf == 1);
 	};
+
+	default {
+		behaviour invalid;
+	};
 };
 
 behaviour<a64.ADD_SUB_IMM> add<T> {
 	T imm = decode_imm<T>(inst.imm12, (u8)inst.shift);
 	T op1 = read_gpr<T>((u8)inst.rn);
 
-	T result = op1 + imm;
+	f32 x = 5;
+	T result = op1 + imm + x;
 
 	write_gpr<T>((u8)inst.rd, result);
 
@@ -68,6 +75,10 @@ behaviour<a64.ADD_SUB_IMM> sub<T> {
 	write_gpr<T>((u8)inst.rd, op1 - imm);
 
 	not_implemented();
+};
+
+behaviour<a64.INVALID> invalid {
+	trap();
 };
 
 helper u64 read_gpr<u64>(u8 reg)

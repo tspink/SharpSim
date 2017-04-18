@@ -269,6 +269,13 @@ namespace SharpSim.Model.AST.Visitor
 			}
 		}
 
+		public virtual void VisitDefaultInstruction (DefaultInstruction insn)
+		{
+			foreach (var part in insn.Parts) {
+				part.Accept (this);
+			}
+		}
+
 		public virtual void VisitInstructionPart (InstructionPart part)
 		{
 		}

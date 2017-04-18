@@ -94,6 +94,8 @@ namespace SharpSim.Parser
 					isa.AddFormatDefinition (BuildFormatDefinition (part.format_def ()));
 				} else if (part.insn_def () != null) {
 					isa.AddInstruction (BuildInstruction (part.insn_def ()));
+				} else if (part.default_def () != null) {
+					isa.SetDefaultInstruction (BuildDefaultInstruction (part.default_def ()));
 				} else {
 					throw new NotSupportedException ();
 				}
@@ -136,15 +138,9 @@ namespace SharpSim.Parser
 			return regspace;
 		}
 
-		private Instruction BuildInstruction (ArchFileParser.Insn_defContext ctx)
+		private void ProcessInstructionParts (InstructionBase insn, ArchFileParser.Insn_partContext [] parts)
 		{
-			var insn = new Instruction (
-						   ctx.INSTRUCTION ().Symbol.ToASTLocation (filename),
-						   ctx.name.Text,
-						   ctx.format.Text
-					   );
-
-			foreach (var part in ctx.insn_part ()) {
+			foreach (var part in parts) {
 				if (part.match_part () != null) {
 					insn.AddPart (BuildMatchPart (part.match_part ()));
 				} else if (part.disasm_part () != null) {
@@ -166,7 +162,25 @@ namespace SharpSim.Parser
 					throw new NotSupportedException ();
 				}
 			}
+		}
 
+		private DefaultInstruction BuildDefaultInstruction (ArchFileParser.Default_defContext ctx)
+		{
+			var insn = new DefaultInstruction (ctx.DEFAULT ().Symbol.ToASTLocation (filename));
+
+			ProcessInstructionParts (insn, ctx.insn_part ());
+			return insn;
+		}
+
+		private Instruction BuildInstruction (ArchFileParser.Insn_defContext ctx)
+		{
+			var insn = new Instruction (
+						   ctx.INSTRUCTION ().Symbol.ToASTLocation (filename),
+						   ctx.name.Text,
+						   ctx.format.Text
+			);
+
+			ProcessInstructionParts (insn, ctx.insn_part ());
 			return insn;
 		}
 

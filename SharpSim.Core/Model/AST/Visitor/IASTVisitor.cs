@@ -10,121 +10,122 @@ namespace SharpSim.Model.AST.Visitor
 {
 	public interface IASTVisitor
 	{
-		void VisitAction(Action action);
+		void VisitAction (Action action);
 
-		void VisitAddOperator(AddOperator addExpression);
+		void VisitAddOperator (AddOperator addExpression);
 
-		void VisitArchFile(ArchFile file);
+		void VisitArchFile (ArchFile file);
 
-		void VisitArchIdentifier(ArchIdentifier ident);
+		void VisitArchIdentifier (ArchIdentifier ident);
 
-		void VisitAssignmentExpression(AssignmentExpression asnExpression);
+		void VisitAssignmentExpression (AssignmentExpression asnExpression);
 
-		void VisitBehaviour(Behaviour behaviour);
+		void VisitBehaviour (Behaviour behaviour);
 
-		void VisitBinaryOperator(BinaryOperator binop);
+		void VisitBinaryOperator (BinaryOperator binop);
 
-		void VisitConstantExpression<T>(ConstantExpression<T> constExpr);
+		void VisitConstantExpression<T> (ConstantExpression<T> constExpr);
 
-		void VisitIntegerConstantExpression(IntegerConstantExpression constExpr);
+		void VisitIntegerConstantExpression (IntegerConstantExpression constExpr);
 
-		void VisitFloatConstantExpression(FloatConstantExpression constExpr);
+		void VisitFloatConstantExpression (FloatConstantExpression constExpr);
 
-		void VisitStringConstantExpression(StringConstantExpression constExpr);
+		void VisitStringConstantExpression (StringConstantExpression constExpr);
 
-		void VisitEqualityOperator(EqualityOperator expr);
+		void VisitEqualityOperator (EqualityOperator expr);
 
-		void VisitExpression(Expression expr);
+		void VisitExpression (Expression expr);
 
-		void VisitFunctionBody(FunctionBody body);
+		void VisitFunctionBody (FunctionBody body);
 
-		void VisitFunctionCall(FunctionCall call);
+		void VisitFunctionCall (FunctionCall call);
 
-		void VisitHelper(Helper helper);
+		void VisitHelper (Helper helper);
 
-		void VisitIfStatement(IfStatement ifStatement);
+		void VisitIfStatement (IfStatement ifStatement);
 
-		void VisitISABlock(ISABlock block);
+		void VisitISABlock (ISABlock block);
 
-		void VisitParameter(Parameter param);
+		void VisitParameter (Parameter param);
 
-		void VisitReadRegister(ReadRegister readRegister);
+		void VisitReadRegister (ReadRegister readRegister);
 
-		void VisitReadRegisterBank(ReadRegisterBank readRegisterBank);
+		void VisitReadRegisterBank (ReadRegisterBank readRegisterBank);
 
-		void VisitReturn(Return ret);
+		void VisitReturn (Return ret);
 
-		void VisitBreak(Break brk);
+		void VisitBreak (Break brk);
 
-		void VisitRaise(Raise raise);
+		void VisitRaise (Raise raise);
 
-		void VisitStructAccess(StructAccess structAccess);
+		void VisitStructAccess (StructAccess structAccess);
 
-		void VisitSwitch(SwitchStatement switchStatement);
+		void VisitSwitch (SwitchStatement switchStatement);
 
-		void VisitSymbolExpression(SymbolExpression symbol);
+		void VisitSymbolExpression (SymbolExpression symbol);
 
-		void VisitTernaryOperator(TernaryOperator ternary);
+		void VisitTernaryOperator (TernaryOperator ternary);
 
-		void VisitVariableDeclaration(VariableDeclaration varDecl);
+		void VisitVariableDeclaration (VariableDeclaration varDecl);
 
-		void VisitWriteRegister(WriteRegister writeRegister);
+		void VisitWriteRegister (WriteRegister writeRegister);
 
-		void VisitWriteRegisterBank(WriteRegisterBank writeRegisterBank);
+		void VisitWriteRegisterBank (WriteRegisterBank writeRegisterBank);
 
-		void VisitReadPC(ReadPC readPC);
+		void VisitReadPC (ReadPC readPC);
 
-		void VisitUnaryOperator(UnaryOperator unop);
+		void VisitUnaryOperator (UnaryOperator unop);
 
-		void VisitShiftOperator(ShiftOperator shop);
+		void VisitShiftOperator (ShiftOperator shop);
 
-		void VisitLogicalOperator(LogicalOperator logop);
+		void VisitLogicalOperator (LogicalOperator logop);
 
-		void VisitBitwiseOperator(BitwiseOperator bitop);
+		void VisitBitwiseOperator (BitwiseOperator bitop);
 
-		void VisitCastOperator(CastOperator castop);
+		void VisitCastOperator (CastOperator castop);
 
-		void VisitFormatDefinition(FormatDefinition formatDef);
+		void VisitFormatDefinition (FormatDefinition formatDef);
 
-		void VisitFormatFieldDefinition(FormatFieldDefinition formatFieldDef);
+		void VisitFormatFieldDefinition (FormatFieldDefinition formatFieldDef);
 
-		void VisitNamedFormatFieldDefinition(NamedFormatFieldDefinition formatFieldDef);
+		void VisitNamedFormatFieldDefinition (NamedFormatFieldDefinition formatFieldDef);
 
-		void VisitConstrainedFormatFieldDefinition(ConstrainedFormatFieldDefinition formatFieldDef);
+		void VisitConstrainedFormatFieldDefinition (ConstrainedFormatFieldDefinition formatFieldDef);
 
-		void VisitRegisterSpace(RegisterSpace regspace);
+		void VisitRegisterSpace (RegisterSpace regspace);
 
-		void VisitRegisterBank(RegisterBank regbank);
+		void VisitRegisterBank (RegisterBank regbank);
 
-		void VisitVectorRegisterBank(VectorRegisterBank vectorRegBank);
+		void VisitVectorRegisterBank (VectorRegisterBank vectorRegBank);
 
-		void VisitRegisterSlot(RegisterSlot regslot);
+		void VisitRegisterSlot (RegisterSlot regslot);
 
-		void VisitComparisonOperator(ComparisonOperator comop);
+		void VisitComparisonOperator (ComparisonOperator comop);
 
-		void VisitInstruction(Instruction insn);
+		void VisitInstruction (Instruction insn);
+		void VisitDefaultInstruction (DefaultInstruction insn);
 
-		void VisitInstructionPart(InstructionPart part);
+		void VisitInstructionPart (InstructionPart part);
 
-		void VisitMatchPart(MatchPart match);
+		void VisitMatchPart (MatchPart match);
 
-		void VisitMatchExpression(MatchExpression expr);
+		void VisitMatchExpression (MatchExpression expr);
 
-		void VisitBinaryMatchExpression(BinaryMatchExpression expr);
+		void VisitBinaryMatchExpression (BinaryMatchExpression expr);
 
-		void VisitComparisonMatchExpression(ComparisonMatchExpression expr);
+		void VisitComparisonMatchExpression (ComparisonMatchExpression expr);
 
-		void VisitDisasmPart(DisasmPart disasm);
+		void VisitDisasmPart (DisasmPart disasm);
 
-		void VisitDisasmStatement(DisasmStatement stmt);
+		void VisitDisasmStatement (DisasmStatement stmt);
 
-		void VisitDisasmAppend(DisasmAppend append);
+		void VisitDisasmAppend (DisasmAppend append);
 
-		void VisitDisasmWhere(DisasmWhere clause);
+		void VisitDisasmWhere (DisasmWhere clause);
 
-		void VisitBehaviourPart(BehaviourPart behaviour);
+		void VisitBehaviourPart (BehaviourPart behaviour);
 
-		void VisitExceptionDeclaration(ExceptionDeclaration exceptionDeclaration);
+		void VisitExceptionDeclaration (ExceptionDeclaration exceptionDeclaration);
 	}
 }
 

@@ -34,6 +34,11 @@ namespace SharpSim.Model.SSA
 			}
 		}
 
+		public override SSAStatement Clone ()
+		{
+			return new StoreValueStatement (this.Value.Clone (), this.Symbol.Clone () as SymbolOperand);
+		}
+
 		public override string ToString ()
 		{
 			return string.Format ("stv {0}, {1}", this.Value, this.Symbol);

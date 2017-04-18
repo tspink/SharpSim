@@ -8,56 +8,63 @@ using System;
 
 namespace SharpSim.Model.SSA
 {
-    public class ArithmeticStatement : BinaryStatement
-    {
-        public enum ArithmeticOperation
-        {
-            Add,
-            Subtract,
-            Multiply,
-            Divide,
-            Modulo,
-            ShiftLeft,
-            LogicalShiftRight,
-            ArithmeticShiftRight
-        }
+	public class ArithmeticStatement : BinaryStatement
+	{
+		public enum ArithmeticOperation
+		{
+			Add,
+			Subtract,
+			Multiply,
+			Divide,
+			Modulo,
+			ShiftLeft,
+			LogicalShiftRight,
+			ArithmeticShiftRight
+		}
 
-        public ArithmeticStatement(TypedSSAOperand lhs, TypedSSAOperand rhs, ArithmeticOperation kind) : base(lhs, rhs)
-        {
-            this.Kind = kind;
-        }
+		public ArithmeticStatement (TypedSSAOperand lhs, TypedSSAOperand rhs, ArithmeticOperation kind) : base (lhs, rhs)
+		{
+			this.Kind = kind;
+		}
 
-        public ArithmeticOperation Kind{ get; private set; }
+		public ArithmeticOperation Kind { get; private set; }
 
-        public override SSAType Type
-        {
-            get {
-                return this.LHS.Type;
-            }
-        }
+		public override SSAType Type {
+			get {
+				return this.LHS.Type;
+			}
+		}
 
-        public override string ToString()
-        {
-            var builder = new System.Text.StringBuilder();
+		public override SSAStatement Clone ()
+		{
+			return new ArithmeticStatement (
+				this.LHS.Clone () as TypedSSAOperand,
+				this.RHS.Clone () as TypedSSAOperand,
+				this.Kind);
+		}
 
-            switch (this.Kind) {
-            case ArithmeticOperation.Add:
-                builder.Append("add");
-                break;
+		public override string ToString ()
+		{
+			var builder = new System.Text.StringBuilder ();
 
-            case ArithmeticOperation.ShiftLeft:
-                builder.Append("shl");
-                break;
+			switch (this.Kind) {
+			case ArithmeticOperation.Add:
+				builder.Append ("add");
+				break;
 
-            default:
-                builder.Append("?");
-                break;
-            }
+			case ArithmeticOperation.ShiftLeft:
+				builder.Append ("shl");
+				break;
 
-            builder.AppendFormat(" {0}, {1}", this.LHS, this.RHS);
+			default:
+				builder.Append ("?");
+				break;
+			}
 
-            return builder.ToString();
-        }
-    }
+			builder.AppendFormat (" {0}, {1}", this.LHS, this.RHS);
+
+			return builder.ToString ();
+		}
+	}
 }
 

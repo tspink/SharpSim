@@ -37,6 +37,11 @@ namespace SharpSim.Model.SSA
 			get { return targetType; }
 		}
 
+		public override SSAStatement Clone ()
+		{
+			return new CastStatement (this.Input.Clone (), this.targetType);
+		}
+
 		public override string ToString ()
 		{
 			return $"cast {this.Input}";
